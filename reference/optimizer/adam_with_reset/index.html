@@ -2445,9 +2445,7 @@ will be incorrect if the parameters are changed.</p>
 
             <details class="quote">
               <summary>Source code in <code>sparse_autoencoder/optimizer/adam_with_reset.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 21</span>
-<span class="normal"> 22</span>
-<span class="normal"> 23</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 23</span>
 <span class="normal"> 24</span>
 <span class="normal"> 25</span>
 <span class="normal"> 26</span>
@@ -2686,7 +2684,9 @@ will be incorrect if the parameters are changed.</p>
 <span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
-<span class="normal">262</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AdamWithReset</span><span class="p">(</span><span class="n">Adam</span><span class="p">):</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AdamWithReset</span><span class="p">(</span><span class="n">Adam</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Adam Optimizer with a reset method.</span>
 
 <span class="sd">    The :meth:`reset_state_all_parameters` and :meth:`reset_neurons_state` methods are useful when</span>
@@ -3245,9 +3245,7 @@ training an SAE on more than one component).</p>
 
           <details class="quote">
             <summary>Source code in <code>sparse_autoencoder/optimizer/adam_with_reset.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 41</span>
-<span class="normal"> 42</span>
-<span class="normal"> 43</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 43</span>
 <span class="normal"> 44</span>
 <span class="normal"> 45</span>
 <span class="normal"> 46</span>
@@ -3342,7 +3340,9 @@ training an SAE on more than one component).</p>
 <span class="normal">135</span>
 <span class="normal">136</span>
 <span class="normal">137</span>
-<span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>  <span class="c1"># (extending existing implementation)</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>  <span class="c1"># (extending existing implementation)</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">params</span><span class="p">:</span> <span class="n">ParamsT</span><span class="p">,</span>
     <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Float</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Axis</span><span class="o">.</span><span class="n">names</span><span class="p">(</span><span class="n">Axis</span><span class="o">.</span><span class="n">SINGLE_ITEM</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
@@ -3597,9 +3597,7 @@ False.</p>
 
           <details class="quote">
             <summary>Source code in <code>sparse_autoencoder/optimizer/adam_with_reset.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">169</span>
 <span class="normal">170</span>
 <span class="normal">171</span>
 <span class="normal">172</span>
@@ -3692,7 +3690,9 @@ False.</p>
 <span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
-<span class="normal">262</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">reset_neurons_state</span><span class="p">(</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">reset_neurons_state</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">parameter</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span>
     <span class="n">neuron_indices</span><span class="p">:</span> <span class="n">Int</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Axis</span><span class="o">.</span><span class="n">names</span><span class="p">(</span><span class="n">Axis</span><span class="o">.</span><span class="n">LEARNT_FEATURE_IDX</span><span class="p">)],</span>
@@ -3813,9 +3813,7 @@ squares of gradients.</p>
 
           <details class="quote">
             <summary>Source code in <code>sparse_autoencoder/optimizer/adam_with_reset.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">142</span>
 <span class="normal">143</span>
 <span class="normal">144</span>
 <span class="normal">145</span>
@@ -3838,7 +3836,9 @@ squares of gradients.</p>
 <span class="normal">162</span>
 <span class="normal">163</span>
 <span class="normal">164</span>
-<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">reset_state_all_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">reset_state_all_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reset the state for all parameters.</span>
 
 <span class="sd">    Iterates over all parameters and resets both the running averages of the gradients and the</span>
