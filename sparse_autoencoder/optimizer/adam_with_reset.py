@@ -13,7 +13,6 @@ from torch.optim import Adam
 
 from sparse_autoencoder.tensor_types import Axis
 
-
 # params_t was renamed to ParamsT in PyTorch 2.2, which caused import errors
 # Copied from PyTorch 2.2 with modifications for better style
 ParamsT: TypeAlias = Iterable[Tensor] | Iterable[dict[str, Any]]
