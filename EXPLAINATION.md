@@ -127,3 +127,7 @@ TODO:
 |:------------------------|:--------------:|:-------------:|:-------------:|
 |**$\text{SAE}$**         |         |        |
 |**$\text{SAE}_\text{N}$**|         |        |
+
+## Related works
+
+[Feature Suppression](https://www.lesswrong.com/posts/3JuSjTZyMzaSeTxKk/addressing-feature-suppression-in-saes)
