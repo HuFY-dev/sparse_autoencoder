@@ -43,7 +43,7 @@ def train_gpt_small_mlp_layers(
     sweep_config = SweepConfig(
         parameters=Hyperparameters(
             loss=LossHyperparameters(
-                l1_coefficient=Parameter(max=0.03, min=0.008),
+                l1_coefficient=Parameter(max=4e-5, min=1e-5),
                 normalize_by_input_norm=Parameter(value=True),
             ),
             optimizer=OptimizerHyperparameters(
@@ -69,11 +69,11 @@ def train_gpt_small_mlp_layers(
             pipeline=PipelineHyperparameters(
                 max_activations=Parameter(100_000_000),
                 checkpoint_frequency=Parameter(20_000_000),
-                validation_frequency=Parameter(20_000_000),
+                validation_frequency=Parameter(5_000_000),
                 max_store_size=Parameter(100_000),
                 source_data_batch_size=Parameter(16),
                 train_batch_size=Parameter(8192),
-                log_frequency=Parameter(20),
+                log_frequency=Parameter(100),
             ),
             activation_resampler=ActivationResamplerHyperparameters(
                 resample_interval=Parameter(200_000_000),
