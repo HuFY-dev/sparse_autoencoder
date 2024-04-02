@@ -110,7 +110,11 @@ class LitSparseAutoencoder(LightningModule):
                     L1AbsoluteLoss(num_components), prefix="loss/l1_learned_activations"
                 ),
                 "l2": add_component_names(
-                    L2ReconstructionLoss(num_components), prefix="loss/l2_reconstruction"
+                    L2ReconstructionLoss(
+                        num_components, 
+                        normalize_by_input_norm=config.normalize_by_input_norm,
+                    ), 
+                    prefix="loss/l2_reconstruction"
                 ),
                 "loss": add_component_names(
                     SparseAutoencoderLoss(num_components, config.l1_coefficient),
@@ -215,7 +219,7 @@ class LitSparseAutoencoder(LightningModule):
         )
 
         if wandb.run is not None:
-            self.log_dict(train_metrics)
+            self.log_dict(train_metrics, on_step=True, on_epoch=True)
 
         # Resample dead neurons
         parameter_updates = self.activation_resampler.forward(
