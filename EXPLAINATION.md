@@ -70,8 +70,8 @@ The consequence of this effect is twofolds:
 
 ## Experiments with SAEs
 
-I started with investigating the feature activation corresponding to the top 1% residual states in
-terms of their norms. Here are the $L_0$ and $L_1$ norms of the feature activations:
+Let's investigate the feature activation corresponding to the top 1% residual states in terms of
+their norms. Here are the $L_0$ and $L_1$ norms of the feature activations:
 
 <div align="center">
     <img src=".\images\feature_act_l0.png" alt="L0 norm of feature activations" width=600>
@@ -107,13 +107,23 @@ norm will not explode for high-norm residuals. We can still learn the reconstruc
 norm decoder, and use it as a feature dictionary that contains information on the norm of residual
 states.
 
-Now we have dealt with the $L_1$ loss, what about the $L_2$ term? This can be more complicated.
-Depending on our goals, we can either choose to divide the $L_2$ loss by $||x||_2^2$, or leave it as
+Now that we have dealt with the $L_1$ loss, what about the $L_2$ term? This can be more complicated.
+Depending on our goals, we can choose to divide the $L_2$ loss by $||x||_2^2$, or leave it as
 is. The prior eliminates the bias towards high-norm residuals, while the latter assumes residual
 states with higher norms are more important than those of lower norms. There is also a third option
 to normalize the $L_2$ by dividing with $||x||_2$, which leaves $L_2$ to grow linearly with
-$||x||_2$ and prevents it from exploding as norms grows larger than $10^2$.
+$||x||_2$ and prevents it from exploding as norms grows larger than $10^2$. I will denote the
+regular $L_2$, $L_2/||x||_2$, and $L_2/||x||_2^2$ as $L_2$, $L_2^1$, and $L_2^2$, respectively.
 
 ## Training
 
-TODO
+We will do experiments under the following 6 conditions:
+
+{ $\text{SAE}$ | $\text{SAE}_\text{N}$ } + { $L_2$ | $L_2^1$ | $L_2^2$ }
+
+TODO:
+
+|                         |      $L_2$     |    $L_2^1$    |    $L_2^1$    |
+|:------------------------|:--------------:|:-------------:|:-------------:|
+|**$\text{SAE}$**         |         |        |
+|**$\text{SAE}_\text{N}$**|         |        |
