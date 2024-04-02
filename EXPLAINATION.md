@@ -1,4 +1,4 @@
-# Modified Loss, Activation, Decoder Arch, and Here is WHY
+# Normalized Sparse Autoencoders
 
 ## Theory
 
