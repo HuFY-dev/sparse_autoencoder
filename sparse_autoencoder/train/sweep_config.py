@@ -89,7 +89,7 @@ class AutoencoderHyperparameters(NestedParameter):
     
     Choices: ["sae", "normalized_sae"]
 
-    Default is "sae"
+    Default is "sae" which is the original implementation of SAE
     """
     
     noise_scale: Parameter[float] = field(default=Parameter(0.0))
