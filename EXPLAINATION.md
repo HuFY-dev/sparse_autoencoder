@@ -66,7 +66,7 @@ The consequence of this effect is twofolds:
 1. Within one layer, SAE will bias residuals with high norms, especially when norms grows above $10^2$.
 2. Across layers, since the $L_1$ loss has a factor of $||x||_2$ while the $L_2$ loss has a factor
    of $||x||_2^2$, the change in norm will bias towards one of the loss terms, effectively making $\alpha$
-   different across layers.
+   different across layers. So we should consider using **different** $\alpha$ in **different** layers.
 
 ## Experiments with SAEs
 
@@ -87,9 +87,17 @@ It turns out, these high norm tokens corresponds to residual states from the `<|
 They are pretty uninterpretable and are less monosemantic. Hence, it might be beneficial to reduce
 the loss of these high norm tokens to allow the model to pick up more information from other tokens.
 
-## Quick fix
+Another relevant observation is [Feature
+Suppression](https://www.lesswrong.com/posts/3JuSjTZyMzaSeTxKk/addressing-feature-suppression-in-saes),
+where feature of smaller activations are completely killed during the training process. The
+residual states with large norms has a quadratic effect on the $L_2$ loss, and a linear relationship
+with the $L_1$, dominating the loss terms and suppressed the smaller residuals.
+
+## Quick fixes
 
 We can change the model architecture a bit.
+
+### Normalization by encoder activation
 
 Define the **Normalized SAE**
 
@@ -107,6 +115,11 @@ norm will not explode for high-norm residuals. We can still learn the reconstruc
 norm decoder, and use it as a feature dictionary that contains information on the norm of residual
 states.
 
+This is implemented and you can set the autoencoder hyperparameter `sae_type={"none"|"normalized_sae"}` to
+use it.
+
+### Normalization of $L_2$ loss
+
 Now that we have dealt with the $L_1$ loss, what about the $L_2$ term? This can be more complicated.
 Depending on our goals, we can choose to divide the $L_2$ loss by $||x||_2^2$, or leave it as
 is. The prior eliminates the bias towards high-norm residuals, while the latter assumes residual
@@ -115,15 +128,55 @@ to normalize the $L_2$ by dividing with $||x||_2$, which leaves $L_2$ to grow li
 $||x||_2$ and prevents it from exploding as norms grows larger than $10^2$. I will denote the
 regular $L_2$, $L_2/||x||_2$, and $L_2/||x||_2^2$ as $L_2$, $L_2^1$, and $L_2^2$, respectively.
 
+This is implemented and you can set the loss hyperparameter
+`normalization_method={"none"|"input_norm"|"input_norm_squared"}` to use it.
+
+### Adjusting $\alpha$
+
+After the adjustment, our loss is now
+
+$$L(x',x)=\alpha||\text{tanh}(\text{ReLU}(W_e \hat{x} + b_e'))||_1+2||x||_2^k(1-cos(x',x))$$
+
+for $k\in\set{0,1,2}$ corresponding to $L_2^2$, $L_2^1$, and $L_2$, respectively.
+
+Now, remember that the norm of residual states is not uniform across layers as well, but there is an
+imbalance between the $L_1$ term and $L_2$ term: The $L_1$ is of the scale `hidden_state_size` *
+`expansion_factor`, which is constant, while the $L_2$ term is of the scale $||x||_2^k$ which is not
+constant across layers when $k \neq 0$. Hence, if we use the same $L_1$ coefficient $\alpha$ across
+layers, there will be some layers where $L_1$ dominates and some layers where reconstruction dominates.
+
+There is also a (rather) simple way to fix this:
+
+First collect a sample of residual states and calculate the norm of these states of every layer,
+denoted as $\set{n_i}$ for $i$ as the layer indices. Then take 
+
+$$L_i(x',x)=\beta_i||\text{tanh}(\text{ReLU}(W_e \hat{x} + b_e'))||_1+2||x||_2^k(1-cos(x',x))$$
+
+where
+
+$$\beta_i=\alpha n_i^k$$
+
+Then we will have a global factor $\alpha$ that controls the sparsity-reconstruction tradeoff, and
+in each layer the actual $L_1$ coefficient is calculated in consideration of the average residual
+norm to ensure cross-layer consistency. I will denote the original approach and this modified
+approach as $\alpha$- and $\beta$-coeff, respectively.
+
+**NOTE**: $\beta$-coeff NOT YET IMPLEMENTED
+
 ## Training
 
-We will do experiments under the following 6 conditions:
+We will do experiments under the following 12 (2 * 3 * 2)conditions:
 
-{ $\text{SAE}$ | $\text{SAE}_\text{N}$ } + { $L_2$ | $L_2^1$ | $L_2^2$ }
+{ $\text{SAE}$ | $\text{SAE}_\text{N}$ } + { $L_2$ | $L_2^1$ | $L_2^2$ } + { $\alpha$- | $\beta$-coeff }
 
 TODO:
 
-|                         |      $L_2$     |    $L_2^1$    |    $L_2^1$    |
+|$\alpha$                 |      $L_2$     |    $L_2^1$    |    $L_2^1$    |
+|:------------------------|:--------------:|:-------------:|:-------------:|
+|**$\text{SAE}$**         |         |        |
+|**$\text{SAE}_\text{N}$**|         |        |
+
+|$\beta$                  |      $L_2$     |    $L_2^1$    |    $L_2^1$    |
 |:------------------------|:--------------:|:-------------:|:-------------:|
 |**$\text{SAE}$**         |         |        |
 |**$\text{SAE}_\text{N}$**|         |        |
