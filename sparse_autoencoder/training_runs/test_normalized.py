@@ -67,9 +67,9 @@ def train_gpt_small_mlp_layers(
                 type=Parameter("tanh_encoder"),
             ),
             pipeline=PipelineHyperparameters(
-                max_activations=Parameter(10_000_000),
-                checkpoint_frequency=Parameter(1_000_000),
-                validation_frequency=Parameter(1_000_000),
+                max_activations=Parameter(100_000_000),
+                checkpoint_frequency=Parameter(20_000_000),
+                validation_frequency=Parameter(20_000_000),
                 max_store_size=Parameter(100_000),
                 source_data_batch_size=Parameter(16),
                 train_batch_size=Parameter(8192),
