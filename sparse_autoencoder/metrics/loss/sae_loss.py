@@ -30,7 +30,7 @@ class SparseAutoencoderLoss(Metric):
     # Settings
     _num_components: int
     _keep_batch_dim: bool
-    _normalize_by_input_norm: bool
+    _normalization_power: int
     _l1_coefficient: float
 
     @property
@@ -74,6 +74,22 @@ class SparseAutoencoderLoss(Metric):
                 dist_reduce_fx="sum",
             )
 
+    @property
+    def normalization_power(self) -> int:
+        """The power of ||x||_2 in the normalization step.
+
+        The normalization is done by dividing the MSE by the norm of the input activations raised to
+        this power. Normally it should be one of {0, 1, 2}. This is useful for e.g. normalizing the
+        loss by the input norm. For regular L2,this should be 0.
+        """
+        return self._normalization_power
+
+    @normalization_power.setter
+    def normalization_power(self, normalization_power: int) -> None:
+        """Set the normalization power."""
+        self._normalization_power = normalization_power
+        self.reset()  # Reset the metric to update the state
+
     # State
     absolute_loss: (
         Float[Tensor, Axis.names(Axis.COMPONENT_OPTIONAL)]
@@ -94,13 +110,21 @@ class SparseAutoencoderLoss(Metric):
         l1_coefficient: PositiveFloat = 0.001,
         *,
         keep_batch_dim: bool = False,
-        normalize_by_input_norm: bool = False,
+        normalization_method: str = "none",
     ):
         """Initialise the metric."""
         super().__init__()
         self._num_components = num_components
         self.keep_batch_dim = keep_batch_dim
-        self._normalize_by_input_norm = normalize_by_input_norm
+        if normalization_method == "none":
+            self.normalization_power = 0
+        elif normalization_method == "input_norm":
+            self.normalization_power = 1
+        elif normalization_method == "input_norm_squared":
+            self.normalization_power = 2
+        else:
+            error_message = f"Normalization method {normalization_method} not recognised."
+            raise ValueError(error_message)
         self._l1_coefficient = l1_coefficient
 
         # Add the state
@@ -126,8 +150,7 @@ class SparseAutoencoderLoss(Metric):
         """Update the metric."""
         absolute_loss = L1AbsoluteLoss.calculate_abs_sum(learned_activations)
         mse = L2ReconstructionLoss.calculate_mse(decoded_activations, source_activations)
-        if self._normalize_by_input_norm:
-            mse = L2ReconstructionLoss.normalize_mse(source_activations, mse)
+        mse = L2ReconstructionLoss.normalize_mse(source_activations, mse, self.normalization_power)
 
         if self.keep_batch_dim:
             self.absolute_loss.append(absolute_loss)  # type: ignore

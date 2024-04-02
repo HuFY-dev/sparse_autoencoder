@@ -44,8 +44,7 @@ def train_gpt_small_mlp_layers(
     sweep_config = SweepConfig(
         parameters=Hyperparameters(
             loss=LossHyperparameters(
-                l1_coefficient=Parameter(max=1e-3, min=1e-4),
-                normalization_method=Parameter(value="input_norm"),
+                l1_coefficient=Parameter(max=1e-3),
             ),
             optimizer=OptimizerHyperparameters(
                 lr=Parameter(max=0.001, min=0.00001),
@@ -65,7 +64,6 @@ def train_gpt_small_mlp_layers(
             ),
             autoencoder=AutoencoderHyperparameters(
                 expansion_factor=Parameter(value=expansion_factor),
-                sae_type=Parameter("normalized_sae"),
             ),
             pipeline=PipelineHyperparameters(
                 max_activations=Parameter(100_000_000),

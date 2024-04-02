@@ -52,9 +52,13 @@ class SparseAutoencoderConfig(BaseModel):
     contain a component axis in any of the parameters).
     """
 
-    type: str = "unit_norm_decoder"
-    """
-    TODO
+    sae_type: str = "sae"
+    """The type of SAE to use.
+    
+    Options:
+        - "sae": Default Sparse Autoencoder with unit norm decoder.
+        - "normalized_sae": Sparse Autoencoder using the tanh(ReLU()) activation function and
+          non-unit norm decoder.
     """
 
 
@@ -160,7 +164,7 @@ class SparseAutoencoder(Module):
         # Initialize the components
         self.pre_encoder_bias = TiedBias(self.tied_bias, TiedBiasPosition.PRE_ENCODER)
 
-        if config.type == "unit_norm_decoder":
+        if config.sae_type == "sae":
             self.encoder = LinearEncoder(
                 input_features=config.n_input_features,
                 learnt_features=config.n_learned_features,
@@ -172,7 +176,7 @@ class SparseAutoencoder(Module):
                 decoded_features=config.n_input_features,
                 n_components=config.n_components,
             )
-        elif config.type == "tanh_encoder":
+        elif config.sae_type == "normalized_sae":
             self.encoder = TanhEncoder(
                 input_features=config.n_input_features,
                 learnt_features=config.n_learned_features,
@@ -185,7 +189,7 @@ class SparseAutoencoder(Module):
                 n_components=config.n_components,
             )
         else:
-            error_message = f"Unknown SAE type: {config.type}"
+            error_message = f"Unknown SAE type: {config.sae_type}"
             raise ValueError(error_message)
 
         self.post_decoder_bias = TiedBias(self.tied_bias, TiedBiasPosition.POST_DECODER)
@@ -244,7 +248,7 @@ class SparseAutoencoder(Module):
 
         This can be used to e.g. constrain weights to unit norm.
         """
-        if self.config.type == "unit_norm_decoder":
+        if self.config.sae_type == "sae":
             self.decoder.constrain_weights_unit_norm()
 
     @staticmethod

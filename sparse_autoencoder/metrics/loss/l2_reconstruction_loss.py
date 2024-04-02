@@ -59,7 +59,7 @@ class L2ReconstructionLoss(Metric):
     # Settings
     _num_components: int
     _keep_batch_dim: bool
-    _normalize_by_input_norm: bool
+    _normalization_power: int
 
     @property
     def keep_batch_dim(self) -> bool:
@@ -92,6 +92,22 @@ class L2ReconstructionLoss(Metric):
                 dist_reduce_fx="sum",
             )
 
+    @property
+    def normalization_power(self) -> int:
+        """The power of ||x||_2 in the normalization step.
+
+        The normalization is done by dividing the MSE by the norm of the input activations raised to
+        this power. Normally it should be one of {0, 1, 2}. This is useful for e.g. normalizing the
+        loss by the input norm. For regular L2,this should be 0.
+        """
+        return self._normalization_power
+
+    @normalization_power.setter
+    def normalization_power(self, normalization_power: int) -> None:
+        """Set the normalization power."""
+        self._normalization_power = normalization_power
+        self.reset()  # Reset the metric to update the state
+
     # State
     mse: (
         Float[Tensor, Axis.COMPONENT_OPTIONAL]
@@ -106,13 +122,21 @@ class L2ReconstructionLoss(Metric):
         num_components: PositiveInt = 1,
         *,
         keep_batch_dim: bool = False,
-        normalize_by_input_norm: bool = False,
+        normalization_method: str = "none",
     ) -> None:
         """Initialise the L2 reconstruction loss."""
         super().__init__()
         self._num_components = num_components
         self.keep_batch_dim = keep_batch_dim
-        self._normalize_by_input_norm = normalize_by_input_norm
+        if normalization_method == "none":
+            self.normalization_power = 0
+        elif normalization_method == "input_norm":
+            self.normalization_power = 1
+        elif normalization_method == "input_norm_squared":
+            self.normalization_power = 2
+        else:
+            error_message = f"Normalization method {normalization_method} not recognised."
+            raise ValueError(error_message)
         self.add_state(
             "num_activation_vectors",
             default=torch.tensor(0, dtype=torch.int64),
@@ -137,9 +161,17 @@ class L2ReconstructionLoss(Metric):
             Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL, Axis.INPUT_OUTPUT_FEATURE)
         ],
         mse: Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL)],
-    ) -> Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL, Axis.INPUT_OUTPUT_FEATURE)]:
-        """Normalize the mse by input norm."""
-        return mse / source_activations.norm(dim=-1, p=2).pow(2)
+        normalization_power: int = 0,
+    ) -> Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL)]:
+        """Normalize the mse by input norm.
+
+        When `normalization_power` is set to 0, this is equivalent to not normalizing the loss.
+        When set to 1, this is equivalent to normalizing the loss by the input norm, making the
+        loss similar to (1 - cosine similarity) * input norm. When set to 2, this is equivalent
+        to normalizing the loss by the input norm squared, making the loss similar to (1 - cosine
+        similarity).
+        """
+        return mse / source_activations.norm(dim=-1, p=2).pow(normalization_power)
 
     def update(
         self,
@@ -168,9 +200,9 @@ class L2ReconstructionLoss(Metric):
             **kwargs: Ignored keyword arguments (to allow use with other metrics in a collection).
         """
         mse = self.calculate_mse(decoded_activations, source_activations)
-
-        if self._normalize_by_input_norm:
-            mse = self.normalize_mse(source_activations, mse)
+        mse = self.normalize_mse(
+            source_activations, mse, normalization_power=self.normalization_power
+        )
 
         if self.keep_batch_dim:
             self.mse.append(mse)  # type: ignore
