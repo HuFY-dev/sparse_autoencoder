@@ -93,7 +93,10 @@ class LitSparseAutoencoder(LightningModule):
 
         # Create the loss & metrics
         self.loss_fn = SparseAutoencoderLoss(
-            num_components, config.l1_coefficient, keep_batch_dim=True, config.normalize_by_input_norm
+            num_components, 
+            config.l1_coefficient, 
+            keep_batch_dim=True, 
+            normalize_by_input_norm=config.normalize_by_input_norm
         )
 
         self.train_metrics = MetricCollection(

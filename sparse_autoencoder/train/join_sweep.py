@@ -1,5 +1,6 @@
 """Join an existing Weights and Biases sweep, as a new agent."""
 import argparse
+import os
 
 from sparse_autoencoder.train.sweep import sweep
 
@@ -20,7 +21,9 @@ def parse_arguments() -> argparse.Namespace:
 def run() -> None:
     """Run the join_sweep script."""
     args = parse_arguments()
-
+    # Avoid tokenizer parallelism
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
+    
     sweep(sweep_id=args.id)
 
 

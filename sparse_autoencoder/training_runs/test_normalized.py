@@ -44,6 +44,7 @@ def train_gpt_small_mlp_layers(
         parameters=Hyperparameters(
             loss=LossHyperparameters(
                 l1_coefficient=Parameter(max=0.03, min=0.008),
+                normalize_by_input_norm=Parameter(value=True),
             ),
             optimizer=OptimizerHyperparameters(
                 lr=Parameter(max=0.001, min=0.00001),
@@ -66,12 +67,13 @@ def train_gpt_small_mlp_layers(
                 type=Parameter("tanh_encoder"),
             ),
             pipeline=PipelineHyperparameters(
-                max_activations=Parameter(1_000_000_000),
-                checkpoint_frequency=Parameter(100_000_000),
-                validation_frequency=Parameter(100_000_000),
+                max_activations=Parameter(10_000_000),
+                checkpoint_frequency=Parameter(1_000_000),
+                validation_frequency=Parameter(1_000_000),
                 max_store_size=Parameter(100_000),
                 source_data_batch_size=Parameter(16),
-                train_batch_size=Parameter(8192)
+                train_batch_size=Parameter(8192),
+                log_frequency=Parameter(20),
             ),
             activation_resampler=ActivationResamplerHyperparameters(
                 resample_interval=Parameter(200_000_000),
