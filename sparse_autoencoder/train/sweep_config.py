@@ -91,6 +91,13 @@ class AutoencoderHyperparameters(NestedParameter):
 
     Default is "sae"
     """
+    
+    noise_scale: Parameter[float] = field(default=Parameter(0.0))
+    """Noise scale.
+    
+    Scale of the Gaussian noise to add to the output before activation.
+    This is only applicable for normalized_sae that uses the TanhEncoder.
+    """
 
 
 class AutoencoderRuntimeHyperparameters(TypedDict):
@@ -99,6 +106,8 @@ class AutoencoderRuntimeHyperparameters(TypedDict):
     expansion_factor: int
 
     sae_type: str
+    
+    noise_scale: float
 
 
 @dataclass(frozen=True)

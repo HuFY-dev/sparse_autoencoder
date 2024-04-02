@@ -60,6 +60,13 @@ class SparseAutoencoderConfig(BaseModel):
         - "normalized_sae": Sparse Autoencoder using the tanh(ReLU()) activation function and
           non-unit norm decoder.
     """
+    
+    noise_scale: float = 0
+    """Noise scale for the tanh encoder.
+    
+    Adds Gaussian noise of N(0, `noise_scale`) to the output of the encoder before activation. Only
+    used if `sae_type` is "normalized_sae". Default is 0 (no noise).
+    """
 
 
 class SparseAutoencoderState(BaseModel, arbitrary_types_allowed=True):
@@ -181,6 +188,7 @@ class SparseAutoencoder(Module):
                 input_features=config.n_input_features,
                 learnt_features=config.n_learned_features,
                 n_components=config.n_components,
+                noise_scale=config.noise_scale,
             )
 
             self.decoder = LinearDecoder(
@@ -316,6 +324,8 @@ class SparseAutoencoder(Module):
             n_input_features=state.config.n_input_features,
             n_learned_features=state.config.n_learned_features,
             n_components=state.config.n_components if component_idx is None else None,
+            sae_type=state.config.sae_type,
+            noise_scale=state.config.noise_scale,
         )
         state_dict = (
             SparseAutoencoder.get_single_component_state_dict(state, component_idx)

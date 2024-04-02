@@ -75,6 +75,7 @@ def setup_autoencoder(
             "threshold_is_dead_portion_fires"
         ],
         sae_type=hyperparameters["autoencoder"]["sae_type"],
+        noise_scale=hyperparameters["autoencoder"]["noise_scale"],
     )
 
     return LitSparseAutoencoder(config)

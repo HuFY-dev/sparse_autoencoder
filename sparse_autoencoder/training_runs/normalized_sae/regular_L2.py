@@ -66,6 +66,7 @@ def train_gpt_small_mlp_layers(
             autoencoder=AutoencoderHyperparameters(
                 expansion_factor=Parameter(value=expansion_factor),
                 sae_type=Parameter("normalized_sae"),
+                noise_scale=Parameter(1),
             ),
             pipeline=PipelineHyperparameters(
                 max_activations=Parameter(1_000_000_000),

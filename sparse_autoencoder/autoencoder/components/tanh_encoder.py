@@ -59,6 +59,9 @@ class TanhEncoder(Module):
     """Number of input features from the source model."""
 
     _n_components: int | None
+    
+    _noise_scale: float
+    """Scale of the Gaussian noise to add to the output before activation."""
 
     weight: Float[
         Parameter,
@@ -98,6 +101,7 @@ class TanhEncoder(Module):
         input_features: PositiveInt,
         learnt_features: PositiveInt,
         n_components: PositiveInt | None,
+        noise_scale: float = 0,
     ):
         """Initialize the linear encoder layer.
 
@@ -111,6 +115,7 @@ class TanhEncoder(Module):
         self._learnt_features = learnt_features
         self._input_features = input_features
         self._n_components = n_components
+        self._noise_scale = noise_scale
 
         self.weight = Parameter(
             torch.empty(
@@ -159,8 +164,11 @@ class TanhEncoder(Module):
             )
             + self.bias
         )
+        
+        # Add gaussian noise to the output
+        epsilon = torch.randn_like(z) * self._noise_scale
 
-        return self.activation_function(z)
+        return self.activation_function(z + epsilon)
 
     @final
     def update_dictionary_vectors(
