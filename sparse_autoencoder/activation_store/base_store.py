@@ -1,4 +1,5 @@
 """Activation Store Base Class."""
+
 from abc import ABC, abstractmethod
 from concurrent.futures import Future
 from typing import final

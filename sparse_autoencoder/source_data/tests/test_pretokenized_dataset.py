@@ -1,4 +1,5 @@
 """Tests for General Pre-Tokenized Dataset."""
+
 import pytest
 
 from sparse_autoencoder.source_data.pretokenized_dataset import PreTokenizedDataset

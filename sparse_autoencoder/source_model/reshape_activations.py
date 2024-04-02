@@ -1,4 +1,5 @@
 """Methods to reshape activation tensors."""
+
 from collections.abc import Callable
 from functools import reduce
 from typing import TypeAlias

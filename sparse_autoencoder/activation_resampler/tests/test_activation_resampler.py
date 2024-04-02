@@ -197,9 +197,9 @@ class TestRenormalizeAndScale:
 
     def test_basic_renormalization(self) -> None:
         """Test basic renormalization with simple inputs."""
-        sampled_input: Float[
-            Tensor, Axis.names(Axis.DEAD_FEATURE, Axis.INPUT_OUTPUT_FEATURE)
-        ] = torch.tensor([[3.0, 4.0, 5.0]])
+        sampled_input: Float[Tensor, Axis.names(Axis.DEAD_FEATURE, Axis.INPUT_OUTPUT_FEATURE)] = (
+            torch.tensor([[3.0, 4.0, 5.0]])
+        )
         neuron_activity: Float[Tensor, Axis.LEARNT_FEATURE] = torch.tensor([1.0, 0, 1, 0, 1])
         encoder_weight: Float[
             Parameter, Axis.names(Axis.LEARNT_FEATURE, Axis.INPUT_OUTPUT_FEATURE)

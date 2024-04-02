@@ -1,4 +1,5 @@
 """L0 norm sparsity metric."""
+
 from typing import Any
 
 from jaxtyping import Float, Int64

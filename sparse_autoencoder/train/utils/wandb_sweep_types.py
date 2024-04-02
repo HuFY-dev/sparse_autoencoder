@@ -2,6 +2,7 @@
 
 Weights & Biases just provide a JSON Schema, so we've converted here to dataclasses.
 """
+
 from abc import ABC
 from dataclasses import asdict, dataclass, is_dataclass
 from enum import Enum, auto

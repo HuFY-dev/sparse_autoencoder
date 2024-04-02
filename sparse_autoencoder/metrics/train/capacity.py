@@ -1,4 +1,5 @@
 """Capacity Metrics."""
+
 from typing import Any
 
 import einops
@@ -118,9 +119,9 @@ class CapacityMetric(Metric):
             ** 2
         )
 
-        sum_of_sq_dot: Float[
-            Tensor, Axis.names(Axis.COMPONENT_OPTIONAL, Axis.BATCH)
-        ] = squared_dot_products.sum(dim=-1)
+        sum_of_sq_dot: Float[Tensor, Axis.names(Axis.COMPONENT_OPTIONAL, Axis.BATCH)] = (
+            squared_dot_products.sum(dim=-1)
+        )
 
         diagonal: Float[Tensor, Axis.names(Axis.COMPONENT_OPTIONAL, Axis.BATCH)] = torch.diagonal(
             squared_dot_products, dim1=1, dim2=2

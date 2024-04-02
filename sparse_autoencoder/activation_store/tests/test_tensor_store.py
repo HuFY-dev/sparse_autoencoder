@@ -1,4 +1,5 @@
 """Tests for the TensorActivationStore."""
+
 import pytest
 import torch
 

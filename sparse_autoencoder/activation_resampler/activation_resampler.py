@@ -1,4 +1,5 @@
 """Activation resampler."""
+
 from dataclasses import dataclass
 from typing import Annotated
 
@@ -76,12 +77,18 @@ class ActivationResampler(Metric):
 
     # Collated data from the train loop
     _neuron_fired_count: Float[Tensor, Axis.names(Axis.COMPONENT, Axis.LEARNT_FEATURE)]
-    _loss: list[Float[Tensor, Axis.names(Axis.ITEMS, Axis.COMPONENT_OPTIONAL)]] | Float[
-        Tensor, Axis.names(Axis.ITEMS, Axis.COMPONENT_OPTIONAL)
-    ]
-    _input_activations: list[
-        Float[Tensor, Axis.names(Axis.ITEMS, Axis.COMPONENT_OPTIONAL, Axis.INPUT_OUTPUT_FEATURE)]
-    ] | Float[Tensor, Axis.names(Axis.ITEMS, Axis.COMPONENT_OPTIONAL, Axis.INPUT_OUTPUT_FEATURE)]
+    _loss: (
+        list[Float[Tensor, Axis.names(Axis.ITEMS, Axis.COMPONENT_OPTIONAL)]]
+        | Float[Tensor, Axis.names(Axis.ITEMS, Axis.COMPONENT_OPTIONAL)]
+    )
+    _input_activations: (
+        list[
+            Float[
+                Tensor, Axis.names(Axis.ITEMS, Axis.COMPONENT_OPTIONAL, Axis.INPUT_OUTPUT_FEATURE)
+            ]
+        ]
+        | Float[Tensor, Axis.names(Axis.ITEMS, Axis.COMPONENT_OPTIONAL, Axis.INPUT_OUTPUT_FEATURE)]
+    )
 
     # Tracking
     _n_activations_seen_process: int
@@ -435,9 +442,9 @@ class ActivationResampler(Metric):
                 loss = dim_zero_cat(self._loss)
                 input_activations = dim_zero_cat(self._input_activations)
 
-                dead_neuron_indices: list[
-                    Int[Tensor, Axis.names(Axis.LEARNT_FEATURE_IDX)]
-                ] = self._get_dead_neuron_indices()
+                dead_neuron_indices: list[Int[Tensor, Axis.names(Axis.LEARNT_FEATURE_IDX)]] = (
+                    self._get_dead_neuron_indices()
+                )
 
                 # Assign each input vector a probability of being picked that is proportional to the
                 # square of the autoencoder's loss on that input.

@@ -1,4 +1,5 @@
 """Test the L0 norm sparsity metric."""
+
 import pytest
 import torch
 

@@ -1,4 +1,5 @@
 """Sparse Autoencoder Model Tests."""
+
 import os
 from pathlib import Path
 import uuid
@@ -82,9 +83,9 @@ def test_forward_pass_same_without_components_and_1_component() -> None:
     n_learned_features = 12
 
     # Inputs
-    input_activations: Float[
-        Tensor, Axis.names(Axis.BATCH, Axis.INPUT_OUTPUT_FEATURE)
-    ] = torch.randn(batch_size, n_input_features)
+    input_activations: Float[Tensor, Axis.names(Axis.BATCH, Axis.INPUT_OUTPUT_FEATURE)] = (
+        torch.randn(batch_size, n_input_features)
+    )
 
     input_single_component: Float[
         Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT, Axis.INPUT_OUTPUT_FEATURE)

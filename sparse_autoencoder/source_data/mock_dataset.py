@@ -2,6 +2,7 @@
 
 For use with tests and simple examples.
 """
+
 from collections.abc import Iterator
 from typing import Literal, final
 

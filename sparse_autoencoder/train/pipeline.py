@@ -1,4 +1,5 @@
 """Default pipeline."""
+
 from collections.abc import Iterator
 from copy import deepcopy
 from functools import partial
@@ -266,9 +267,9 @@ class Pipeline:
                 )
 
                 with torch.no_grad():
-                    loss: Float[
-                        Tensor, Axis.names(Axis.SOURCE_DATA_BATCH, Axis.POSITION)
-                    ] = self.source_model.forward(input_ids, return_type="loss")
+                    loss: Float[Tensor, Axis.names(Axis.SOURCE_DATA_BATCH, Axis.POSITION)] = (
+                        self.source_model.forward(input_ids, return_type="loss")
+                    )
                     loss_with_reconstruction = self.source_model.run_with_hooks(
                         input_ids,
                         return_type="loss",

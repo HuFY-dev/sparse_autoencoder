@@ -1,4 +1,5 @@
 """Test the Neuron Activity Metric."""
+
 import pytest
 import torch
 

@@ -1,4 +1,5 @@
 """Linear encoder layer with tanh(ReLU()) activation."""
+
 import math
 from typing import final
 
@@ -7,20 +8,29 @@ from jaxtyping import Float, Int64
 from pydantic import PositiveInt, validate_call
 import torch
 from torch import Tensor
-from torch.nn import Module, Parameter, ReLU, init, Tanh
+from torch.nn import Module, Parameter, ReLU, Tanh, init
 
 from sparse_autoencoder.autoencoder.types import ResetOptimizerParameterDetails
 from sparse_autoencoder.tensor_types import Axis
 from sparse_autoencoder.utils.tensor_shape import shape_with_optional_dimensions
 
+
 class TanhReLU(Module):
-    def __init__(self):
-        super(TanhReLU, self).__init__()
+    r"""Tanh(ReLU()) activation function."""
+
+    @validate_call
+    def __init__(self) -> None:
+        r"""Initialize the Tanh(ReLU()) activation function."""
+        super().__init__()
         self.tanh = Tanh()
         self.relu = ReLU()
 
-    def forward(self, x):
+    def forward(
+        self, x: Float[Tensor, Axis.names(Axis.BATCH, Axis.LEARNT_FEATURE)]
+    ) -> Float[Tensor, Axis.names(Axis.BATCH, Axis.LEARNT_FEATURE)]:
+        r"""Forward pass."""
         return self.tanh(self.relu(x))
+
 
 @final
 class TanhEncoder(Module):

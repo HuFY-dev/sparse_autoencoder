@@ -1,4 +1,5 @@
 """PyTorch Lightning module for training a sparse autoencoder."""
+
 from functools import partial
 from typing import Any
 
@@ -46,7 +47,7 @@ class LitSparseAutoencoderConfig(SparseAutoencoderConfig):
     resample_loss_dataset_size: PositiveInt = 819200
 
     resample_threshold_is_dead_portion_fires: NonNegativeFloat = 0.0
-    
+
     normalize_by_input_norm: bool = False
 
     def model_post_init(self, __context: Any) -> None:  # noqa: ANN401
@@ -93,10 +94,10 @@ class LitSparseAutoencoder(LightningModule):
 
         # Create the loss & metrics
         self.loss_fn = SparseAutoencoderLoss(
-            num_components, 
-            config.l1_coefficient, 
-            keep_batch_dim=True, 
-            normalize_by_input_norm=config.normalize_by_input_norm
+            num_components,
+            config.l1_coefficient,
+            keep_batch_dim=True,
+            normalize_by_input_norm=config.normalize_by_input_norm,
         )
 
         self.train_metrics = MetricCollection(
@@ -111,14 +112,14 @@ class LitSparseAutoencoder(LightningModule):
                 ),
                 "l2": add_component_names(
                     L2ReconstructionLoss(
-                        num_components, 
+                        num_components,
                         normalize_by_input_norm=config.normalize_by_input_norm,
-                    ), 
-                    prefix="loss/l2_reconstruction"
+                    ),
+                    prefix="loss/l2_reconstruction",
                 ),
                 "loss": add_component_names(
                     SparseAutoencoderLoss(
-                        num_components, 
+                        num_components,
                         config.l1_coefficient,
                         normalize_by_input_norm=config.normalize_by_input_norm,
                     ),

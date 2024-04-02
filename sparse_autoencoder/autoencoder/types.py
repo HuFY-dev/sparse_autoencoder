@@ -1,4 +1,5 @@
 """Autoencoder types."""
+
 from typing import NamedTuple
 
 from torch.nn import Parameter

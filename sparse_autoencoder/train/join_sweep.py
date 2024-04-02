@@ -1,4 +1,5 @@
 """Join an existing Weights and Biases sweep, as a new agent."""
+
 import argparse
 import os
 
@@ -23,7 +24,7 @@ def run() -> None:
     args = parse_arguments()
     # Avoid tokenizer parallelism
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
-    
+
     sweep(sweep_id=args.id)
 
 

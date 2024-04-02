@@ -1,4 +1,5 @@
 """Data parallel utils."""
+
 from typing import Any, Generic, TypeVar
 
 from torch.nn import DataParallel, Module

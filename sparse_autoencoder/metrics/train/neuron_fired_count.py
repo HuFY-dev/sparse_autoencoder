@@ -1,4 +1,5 @@
 """Neuron fired count metric."""
+
 from typing import Any
 
 from jaxtyping import Bool, Float, Int

@@ -1,4 +1,5 @@
 """Component slice tensor utils."""
+
 from torch import Tensor
 
 

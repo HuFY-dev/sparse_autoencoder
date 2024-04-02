@@ -1,4 +1,5 @@
 """Train batch feature density."""
+
 from typing import Any
 
 from jaxtyping import Bool, Float, Int64

@@ -1,4 +1,5 @@
 """Abstract tokenized prompts dataset class."""
+
 from abc import ABC, abstractmethod
 from collections.abc import Mapping, Sequence
 from typing import Any, Generic, TypedDict, TypeVar, final

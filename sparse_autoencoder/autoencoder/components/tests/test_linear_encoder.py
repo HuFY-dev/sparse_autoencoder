@@ -1,4 +1,5 @@
 """Linear encoder tests."""
+
 from jaxtyping import Float, Int64
 import pytest
 from syrupy.session import SnapshotSession
@@ -101,9 +102,9 @@ def test_update_dictionary_vectors_with_no_neurons(encoder: LinearEncoder) -> No
         0, dtype=torch.int64
     )
 
-    updates: Float[
-        Tensor, Axis.names(Axis.LEARNT_FEATURE_IDX, Axis.INPUT_OUTPUT_FEATURE)
-    ] = torch.empty((0, INPUT_FEATURES), dtype=torch.float)
+    updates: Float[Tensor, Axis.names(Axis.LEARNT_FEATURE_IDX, Axis.INPUT_OUTPUT_FEATURE)] = (
+        torch.empty((0, INPUT_FEATURES), dtype=torch.float)
+    )
 
     encoder.update_dictionary_vectors(dictionary_vector_indices, updates, component_idx=0)
 

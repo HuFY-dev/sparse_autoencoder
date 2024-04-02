@@ -1,4 +1,5 @@
 """Tests for AdamWithReset optimizer."""
+
 import pytest
 import torch
 

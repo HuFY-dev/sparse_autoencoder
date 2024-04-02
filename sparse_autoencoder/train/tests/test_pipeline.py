@@ -1,4 +1,5 @@
 """Test the pipeline module."""
+
 import os
 from typing import TYPE_CHECKING
 from unittest.mock import MagicMock

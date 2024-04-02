@@ -1,4 +1,5 @@
 """Test the feature density metric."""
+
 import pytest
 import torch
 

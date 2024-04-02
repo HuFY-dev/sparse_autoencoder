@@ -1,4 +1,5 @@
 """Sweep."""
+
 from pathlib import Path
 import re
 import sys
@@ -91,17 +92,9 @@ def setup_source_data(hyperparameters: RuntimeHyperparameters) -> SourceDataset:
     Raises:
         ValueError: If the tokenizer name is not specified, but pre_tokenized is False.
     """
-    dataset_dir = (
-        hyperparameters["source_data"]["dataset_dir"]
-        if "dataset_dir" in hyperparameters["source_data"]
-        else None
-    )
+    dataset_dir = hyperparameters["source_data"].get("dataset_dir", None)
 
-    dataset_files = (
-        hyperparameters["source_data"]["dataset_files"]
-        if "dataset_files" in hyperparameters["source_data"]
-        else None
-    )
+    dataset_files = hyperparameters["source_data"].get("dataset_files", None)
 
     if hyperparameters["source_data"]["pre_tokenized"]:
         return PreTokenizedDataset(

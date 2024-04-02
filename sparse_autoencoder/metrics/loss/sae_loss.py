@@ -1,4 +1,5 @@
 """Sparse Autoencoder loss."""
+
 from typing import Any
 
 from jaxtyping import Float, Int64
@@ -74,12 +75,16 @@ class SparseAutoencoderLoss(Metric):
             )
 
     # State
-    absolute_loss: Float[Tensor, Axis.names(Axis.COMPONENT_OPTIONAL)] | list[
-        Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL)]
-    ] | None = None
-    mse: Float[Tensor, Axis.COMPONENT_OPTIONAL] | list[
-        Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL)]
-    ] | None = None
+    absolute_loss: (
+        Float[Tensor, Axis.names(Axis.COMPONENT_OPTIONAL)]
+        | list[Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL)]]
+        | None
+    ) = None
+    mse: (
+        Float[Tensor, Axis.COMPONENT_OPTIONAL]
+        | list[Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL)]]
+        | None
+    ) = None
     num_activation_vectors: Int64[Tensor, Axis.SINGLE_ITEM]
 
     @validate_call

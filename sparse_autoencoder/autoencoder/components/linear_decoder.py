@@ -1,5 +1,5 @@
 """Linear decoder layer."""
-import math
+
 from typing import final
 
 import einops
@@ -19,7 +19,7 @@ class LinearDecoder(Module):
     r"""Constrained unit norm linear decoder layer.
 
     Linear layer decoder, where the dictionary vectors (columns of the weight matrix) are NOT
-    constrained to have unit norm. 
+    constrained to have unit norm.
 
     $$ \begin{align*}
         m &= \text{learned features dimension} \\
@@ -31,7 +31,10 @@ class LinearDecoder(Module):
     \end{align*} $$
 
     Motivation:
-        TODO
+        Contrary to the unit norm decoder, this decoder does not constrain the dictionary vectors,
+        allowing them to be any arbitrary vector in the input space. This is useful when we want to
+        learn the dictionary vectors with norm information, and we can leave the normalization to
+        the encoder's activation function.
     """
 
     _learnt_features: int
@@ -135,7 +138,7 @@ class LinearDecoder(Module):
         # Assumes we are using ReLU activation function (for e.g. leaky ReLU, the `a` parameter and
         # `nonlinerity` must be changed.
         init.kaiming_uniform_(self.weight, nonlinearity="relu")
-        
+
     def forward(
         self, x: Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL, Axis.LEARNT_FEATURE)]
     ) -> Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL, Axis.INPUT_OUTPUT_FEATURE)]:

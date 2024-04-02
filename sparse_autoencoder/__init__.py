@@ -1,4 +1,5 @@
 """Sparse Autoencoder Library."""
+
 from sparse_autoencoder.activation_resampler.activation_resampler import ActivationResampler
 from sparse_autoencoder.activation_store.tensor_store import TensorActivationStore
 from sparse_autoencoder.autoencoder.model import SparseAutoencoder, SparseAutoencoderConfig

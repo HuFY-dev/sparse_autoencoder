@@ -1,4 +1,5 @@
 """Classwise metrics wrapper."""
+
 import torch
 from torch import Tensor
 from torchmetrics import ClasswiseWrapper, Metric

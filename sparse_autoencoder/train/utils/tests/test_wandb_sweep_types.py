@@ -1,4 +1,5 @@
 """Test wandb sweep types."""
+
 from dataclasses import dataclass, field
 
 from sparse_autoencoder.train.utils.wandb_sweep_types import (

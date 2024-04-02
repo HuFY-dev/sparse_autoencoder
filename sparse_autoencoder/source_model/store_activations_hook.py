@@ -1,4 +1,5 @@
 """TransformerLens Hook for storing activations."""
+
 from jaxtyping import Float
 from torch import Tensor
 from transformer_lens.hook_points import HookPoint
@@ -61,9 +62,9 @@ def store_activations_hook(
     Returns:
         Unmodified activations.
     """
-    reshaped: Float[
-        Tensor, Axis.names(Axis.STORE_BATCH, Axis.INPUT_OUTPUT_FEATURE)
-    ] = reshape_method(value)
+    reshaped: Float[Tensor, Axis.names(Axis.STORE_BATCH, Axis.INPUT_OUTPUT_FEATURE)] = (
+        reshape_method(value)
+    )
 
     store.extend(reshaped, component_idx=component_idx)
 

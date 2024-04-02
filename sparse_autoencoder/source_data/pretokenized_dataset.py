@@ -11,6 +11,7 @@ PreTokenizedDataset should work with any of the following tokenized datasets:
 - alancooney/sae-monology-pile-uncopyrighted-tokenizer-gpt2
 
 """
+
 from collections.abc import Mapping, Sequence
 from typing import final
 

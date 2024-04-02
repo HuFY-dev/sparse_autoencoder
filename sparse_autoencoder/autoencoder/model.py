@@ -1,4 +1,5 @@
 """The Sparse Autoencoder Model."""
+
 from pathlib import Path
 from tempfile import gettempdir
 from typing import NamedTuple
@@ -18,11 +19,11 @@ from torch.nn import Module, Parameter
 from torch.serialization import FILE_LIKE
 import wandb
 
+from sparse_autoencoder.autoencoder.components.linear_decoder import LinearDecoder
 from sparse_autoencoder.autoencoder.components.linear_encoder import LinearEncoder
+from sparse_autoencoder.autoencoder.components.tanh_encoder import TanhEncoder
 from sparse_autoencoder.autoencoder.components.tied_bias import TiedBias, TiedBiasPosition
 from sparse_autoencoder.autoencoder.components.unit_norm_decoder import UnitNormDecoder
-from sparse_autoencoder.autoencoder.components.tanh_encoder import TanhEncoder
-from sparse_autoencoder.autoencoder.components.linear_decoder import LinearDecoder
 from sparse_autoencoder.autoencoder.types import ResetOptimizerParameterDetails
 from sparse_autoencoder.tensor_types import Axis
 from sparse_autoencoder.utils.tensor_shape import shape_with_optional_dimensions
@@ -50,7 +51,7 @@ class SparseAutoencoderConfig(BaseModel):
     If `None`, the SAE is assumed to be trained on just one component (in this case the model won't
     contain a component axis in any of the parameters).
     """
-    
+
     type: str = "unit_norm_decoder"
     """
     TODO
@@ -132,6 +133,9 @@ class SparseAutoencoder(Module):
         Args:
             config: Model config.
             geometric_median_dataset: Estimated geometric median of the dataset.
+
+        Raises:
+            ValueError: If the specified `SAE` type in `config` is unknown or not supported.
         """
         super().__init__()
 
@@ -181,7 +185,8 @@ class SparseAutoencoder(Module):
                 n_components=config.n_components,
             )
         else:
-            raise ValueError(f"Unknown SAE type: {config.type}")
+            error_message = f"Unknown SAE type: {config.type}"
+            raise ValueError(error_message)
 
         self.post_decoder_bias = TiedBias(self.tied_bias, TiedBiasPosition.POST_DECODER)
 

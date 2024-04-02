@@ -1,4 +1,5 @@
 """Tensor Axis Types."""
+
 from enum import auto
 
 from strenum import LowercaseStrEnum

@@ -8,6 +8,7 @@ poetry env use python3.11 && poetry install &&
 poetry run python sparse_autoencoder/training_runs/gpt2.py
 ```
 """
+
 import os
 
 from sparse_autoencoder import (

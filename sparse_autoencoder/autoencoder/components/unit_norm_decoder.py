@@ -1,4 +1,5 @@
 """Linear layer with unit norm weights."""
+
 from typing import final
 
 import einops

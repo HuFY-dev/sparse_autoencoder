@@ -1,4 +1,5 @@
 """Replace activations hook tests."""
+
 from functools import partial
 
 from jaxtyping import Int

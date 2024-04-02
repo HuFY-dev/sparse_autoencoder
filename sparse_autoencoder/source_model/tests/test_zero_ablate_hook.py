@@ -1,4 +1,5 @@
 """Test the zero ablate hook."""
+
 import pytest
 import torch
 from transformer_lens.hook_points import HookPoint

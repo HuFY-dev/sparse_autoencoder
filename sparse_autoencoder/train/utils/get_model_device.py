@@ -1,4 +1,5 @@
 """Get the device that the model is on."""
+
 from lightning import LightningModule
 import torch
 from torch.nn import Module

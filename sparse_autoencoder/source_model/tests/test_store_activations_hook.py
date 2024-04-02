@@ -1,4 +1,5 @@
 """Store Activations Hook Tests."""
+
 from functools import partial
 
 from jaxtyping import Int

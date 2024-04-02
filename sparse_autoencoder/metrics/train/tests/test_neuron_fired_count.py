@@ -1,4 +1,5 @@
 """Test the Neuron Fired Count Metric."""
+
 import pytest
 import torch
 

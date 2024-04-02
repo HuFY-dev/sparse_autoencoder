@@ -8,6 +8,7 @@ poetry env use python3.11 && poetry install &&
 poetry run python sparse_autoencoder/training_runs/gpt2.py
 ```
 """
+
 import os
 
 from sparse_autoencoder import (
@@ -87,6 +88,7 @@ def train_gpt_small_mlp_layers(
     )
 
     sweep(sweep_config=sweep_config)
+
 
 if __name__ == "__main__":
     train_gpt_small_mlp_layers(expansion_factor=16)

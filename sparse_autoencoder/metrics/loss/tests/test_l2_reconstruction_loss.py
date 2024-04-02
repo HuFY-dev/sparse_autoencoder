@@ -1,4 +1,5 @@
 """Test the L2 reconstruction loss metric."""
+
 from jaxtyping import Float
 import pytest
 from torch import Tensor, allclose, ones, tensor, zeros

@@ -1,4 +1,5 @@
 """Neuron activity metric."""
+
 from typing import Annotated, Any
 
 from jaxtyping import Bool, Float, Int64

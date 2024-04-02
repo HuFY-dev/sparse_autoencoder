@@ -5,6 +5,7 @@ GenericTextDataset should work with the following datasets:
 - the_pile_openwebtext2
 - roneneldan/TinyStories
 """
+
 from collections.abc import Mapping, Sequence
 from typing import TypedDict, final
 

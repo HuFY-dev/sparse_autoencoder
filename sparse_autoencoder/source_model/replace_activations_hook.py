@@ -1,4 +1,5 @@
 """Replace activations hook."""
+
 from typing import TYPE_CHECKING
 
 from jaxtyping import Float

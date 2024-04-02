@@ -1,4 +1,5 @@
 """Tests for the constrained unit norm linear layer."""
+
 from jaxtyping import Float, Int64
 import pytest
 import torch

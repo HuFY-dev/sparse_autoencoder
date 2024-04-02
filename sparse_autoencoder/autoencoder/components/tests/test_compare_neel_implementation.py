@@ -2,6 +2,7 @@
 
 https://github.com/neelnanda-io/1L-Sparse-Autoencoder/blob/main/utils.py
 """
+
 import torch
 from torch import nn
 

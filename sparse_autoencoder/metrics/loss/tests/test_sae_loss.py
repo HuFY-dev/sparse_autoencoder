@@ -1,4 +1,5 @@
 """Test the sparse autoencoder loss metric."""
+
 from jaxtyping import Float
 import pytest
 from torch import Tensor, allclose, ones, rand, tensor, zeros

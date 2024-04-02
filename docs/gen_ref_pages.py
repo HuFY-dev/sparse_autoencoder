@@ -1,4 +1,5 @@
 """Auto-generate reference documentation based on docstrings."""
+
 from pathlib import Path
 import shutil
 

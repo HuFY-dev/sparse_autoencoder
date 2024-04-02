@@ -1,4 +1,5 @@
 """Tests for sweep functionality."""
+
 import pytest
 from syrupy.session import SnapshotSession
 

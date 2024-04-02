@@ -1,4 +1,5 @@
 """Linear encoder layer."""
+
 import math
 from typing import final
 

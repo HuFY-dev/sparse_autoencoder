@@ -1,4 +1,5 @@
 """Test the classwise wrapper."""
+
 import pytest
 import torch
 

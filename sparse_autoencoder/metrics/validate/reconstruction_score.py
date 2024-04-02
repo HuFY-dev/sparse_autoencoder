@@ -1,4 +1,5 @@
 """Reconstruction score metric."""
+
 from jaxtyping import Float, Int64
 from pydantic import PositiveInt, validate_call
 import torch
@@ -83,12 +84,12 @@ class ReconstructionScoreMetric(Metric):
             component_idx: Component idx.
         """
         self.source_model_loss[component_idx] += source_model_loss.sum()
-        self.source_model_loss_with_zero_ablation[
-            component_idx
-        ] += source_model_loss_with_zero_ablation.sum()
-        self.source_model_loss_with_reconstruction[
-            component_idx
-        ] += source_model_loss_with_reconstruction.sum()
+        self.source_model_loss_with_zero_ablation[component_idx] += (
+            source_model_loss_with_zero_ablation.sum()
+        )
+        self.source_model_loss_with_reconstruction[component_idx] += (
+            source_model_loss_with_reconstruction.sum()
+        )
 
     def compute(
         self,

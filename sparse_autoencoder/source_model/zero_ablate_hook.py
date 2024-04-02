@@ -1,4 +1,5 @@
 """Zero ablate hook."""
+
 import torch
 from torch import Tensor
 from transformer_lens.hook_points import HookPoint
