@@ -30,7 +30,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
 def train_gpt_small_mlp_layers(
-    expansion_factor: int = 4,
+    expansion_factor: int = 16,
     n_layers: int = 12,
 ) -> None:
     """Run a new sweep experiment on GPT 2 Small's MLP layers.
@@ -72,7 +72,7 @@ def train_gpt_small_mlp_layers(
                 validation_frequency=Parameter(50_000_000),
                 max_store_size=Parameter(100_000),
                 source_data_batch_size=Parameter(16),
-                train_batch_size=Parameter(8192),
+                train_batch_size=Parameter(4096),
                 log_frequency=Parameter(100),
             ),
             activation_resampler=ActivationResamplerHyperparameters(
