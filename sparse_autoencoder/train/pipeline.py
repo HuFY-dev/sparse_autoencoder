@@ -1,5 +1,6 @@
 """Default pipeline."""
 from collections.abc import Iterator
+from copy import deepcopy
 from functools import partial
 import logging
 from pathlib import Path
@@ -133,7 +134,7 @@ class Pipeline:
             component_names=cache_names,
             prefix="validation/reconstruction_score",
         )
-        self.reconstruction_score.to(get_model_device(self.autoencoder))
+        self.reconstruction_score.to(get_model_device(self.source_model))
 
         # Create a stateful iterator
         source_dataloader = source_dataset.get_dataloader(
@@ -244,7 +245,7 @@ class Pipeline:
             self.n_components, device=source_model_device
         )
 
-        sae_model = self.autoencoder.sparse_autoencoder.clone()
+        sae_model = deepcopy(self.autoencoder.sparse_autoencoder)
         sae_model.to(source_model_device)
 
         for component_idx, cache_name in enumerate(self.cache_names):
