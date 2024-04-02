@@ -129,15 +129,15 @@ class L2ReconstructionLoss(Metric):
         return (decoded_activations - source_activations).pow(2).mean(dim=-1)
     
     @staticmethod
-    def normalize_input(
-        activations: Float[
+    def normalize_mse(
+        source_activations: Float[
             Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL, Axis.INPUT_OUTPUT_FEATURE)
         ],
+        mse: Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL)]
     ) -> Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL, Axis.INPUT_OUTPUT_FEATURE)]:
-        """Normalize the input activations."""
-        activation_norm = activations.norm(dim=-1, keepdim=True)
-        return activations / activation_norm
-
+        """Normalize the mse by input norm."""
+        return mse / source_activations.norm(dim=-1, p=2).pow(2)
+    
     def update(
         self,
         decoded_activations: Float[
@@ -164,11 +164,11 @@ class L2ReconstructionLoss(Metric):
             source_activations: The source activations from the autoencoder.
             **kwargs: Ignored keyword arguments (to allow use with other metrics in a collection).
         """
-        if self._normalize_by_input_norm:
-            decoded_activations = self.normalize_input(decoded_activations)
-            source_activations = self.normalize_input(source_activations)
         
         mse = self.calculate_mse(decoded_activations, source_activations)
+
+        if self._normalize_by_input_norm:
+            mse = self.normalize_mse(source_activations, mse)
 
         if self.keep_batch_dim:
             self.mse.append(mse)  # type: ignore

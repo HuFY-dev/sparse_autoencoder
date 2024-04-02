@@ -117,7 +117,11 @@ class LitSparseAutoencoder(LightningModule):
                     prefix="loss/l2_reconstruction"
                 ),
                 "loss": add_component_names(
-                    SparseAutoencoderLoss(num_components, config.l1_coefficient),
+                    SparseAutoencoderLoss(
+                        num_components, 
+                        config.l1_coefficient,
+                        normalize_by_input_norm=config.normalize_by_input_norm,
+                    ),
                     prefix="loss/total",
                 ),
             },

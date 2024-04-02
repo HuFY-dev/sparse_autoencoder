@@ -120,10 +120,9 @@ class SparseAutoencoderLoss(Metric):
     ) -> None:
         """Update the metric."""
         absolute_loss = L1AbsoluteLoss.calculate_abs_sum(learned_activations)
-        if self._normalize_by_input_norm:
-            source_activations = L2ReconstructionLoss.normalize_input(source_activations)
-            decoded_activations = L2ReconstructionLoss.normalize_input(decoded_activations)
         mse = L2ReconstructionLoss.calculate_mse(decoded_activations, source_activations)
+        if self._normalize_by_input_norm:
+            mse = L2ReconstructionLoss.normalize_mse(source_activations, mse)
 
         if self.keep_batch_dim:
             self.absolute_loss.append(absolute_loss)  # type: ignore
