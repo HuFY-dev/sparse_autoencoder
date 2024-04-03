@@ -68,6 +68,44 @@ class SparseAutoencoderConfig(BaseModel):
     used if `sae_type` is "normalized_sae". Default is 0 (no noise).
     """
 
+    l2_normalization_method: str = "none"
+    """The normalization method used by the L2 loss.
+    
+    Choices: ["none", "input_norm", "input_norm_squared"]
+    
+    The normalization method to use for the mse (L2) loss. Default is "none", which returns the raw
+    L2 loss. If set to "input_norm", the loss is normalized by the input norm. If set to "input_norm
+    squared", the loss is normalized by the input norm squared. 
+    
+    NOTE: This will only change the scale of the l2 loss but not the l1, so it's recommended to use
+    different l1 coefficients for different normalization methods.
+
+    Intuitions of different normalization methods:
+    - "none": This is equivalent to not normalizing the loss, so inputs with high norms (>100) will
+    have significantly higher losses than inputs with lower norms (~50). This term can be
+    approximated by 2 * norm(x)^2 * (1 - cosine_similarity(x', x)) which grows quadratically with
+    the norm of the input assuming the cosine similarity is constant.
+    - "input_norm": This divides the loss by the norm of the input vector. This term can be
+    approximated by 2 * norm(x) * (1 - cosine_similarity(x', x)) which grows linearly with the norm
+    assuming the cosine similarity is constant.
+    - "input_norm_squared": This divides the loss by the squared norm of the input vector. This term
+    can be approximated by 2 * (1 - cosine_similarity(x', x)) which is constant with respect to the
+    norm of the input assuming the cosine similarity is constant. This allows the model to better
+    pick up information from low norm inputs.
+
+    This can be useful because the input vectors can vary in magnitude and normalizing them can help
+    to ensure that the loss is not dominated by activations of high magnitudes (often
+    uninterpretable activations from the <|endoftext|> token).
+    """
+
+    match_l1_l2_scale: bool = False
+    """Whether to match the scale of the L1 and L2 losses.
+    
+    If True, the L1 loss is normalized by the same power of the input norm as the L2 loss. This can
+    make the L1 and L2 loss more balanced across layers and better controlled by the L1 coefficient.
+    More detailed analysis can be found in ./docs/content/ANALYSIS.md.
+    """
+
 
 class SparseAutoencoderState(BaseModel, arbitrary_types_allowed=True):
     """SAE model state.
@@ -326,6 +364,8 @@ class SparseAutoencoder(Module):
             n_components=state.config.n_components if component_idx is None else None,
             sae_type=state.config.sae_type,
             noise_scale=state.config.noise_scale,
+            l2_normalization_method=state.config.l2_normalization_method,
+            match_l1_l2_scale=state.config.match_l1_l2_scale,
         )
         state_dict = (
             SparseAutoencoder.get_single_component_state_dict(state, component_idx)

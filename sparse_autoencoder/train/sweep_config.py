@@ -124,7 +124,7 @@ class LossHyperparameters(NestedParameter):
     """
 
     l2_normalization_method: Parameter[str] = field(default=Parameter(value="none"))
-    """Normalize by input norm.
+    """The normalization method used by the L2 loss.
     
     Choices: ["none", "input_norm", "input_norm_squared"]
     
@@ -153,6 +153,14 @@ class LossHyperparameters(NestedParameter):
     uninterpretable activations from the <|endoftext|> token).
     """
 
+    match_l1_l2_scale: Parameter[bool] = field(default=Parameter(value=False))
+    """Whether to match the scale of the L1 and L2 losses.
+    
+    If True, the L1 loss is normalized by the same power of the input norm as the L2 loss. This can
+    make the L1 and L2 loss more balanced across layers and better controlled by the L1 coefficient.
+    More detailed analysis can be found in ./docs/content/ANALYSIS.md.
+    """
+
 
 class LossRuntimeHyperparameters(TypedDict):
     """Loss runtime hyperparameters."""
@@ -160,6 +168,8 @@ class LossRuntimeHyperparameters(TypedDict):
     l1_coefficient: float
 
     l2_normalization_method: str
+    
+    match_l1_l2_scale: bool
 
 
 @dataclass(frozen=True)
