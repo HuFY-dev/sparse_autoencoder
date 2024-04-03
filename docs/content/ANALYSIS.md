@@ -181,17 +181,17 @@ This is implemented and you can set the loss hyperparameter
 
 We will do experiments under the following 12 (2 * 3 * 2)conditions:
 
-{ $\text{SAE}$ | $\text{SAE}_\text{N}$ } + { $L_2$ | $L_2^1$ | $L_2^2$ } + { $\alpha$- | $\beta$-coeff }
+{ $\text{SAE}$ | $\text{SAE}_\text{N}$ } + { $L_2$ | $L_2^1$ | $L_2^2$ } + { `match_l1_l2_scale = {True|False}`}
 
 TODO:
 
-|$\alpha$                 |      $L_2$     |    $L_2^1$    |    $L_2^1$    |
-|:------------------------|:--------------:|:-------------:|:-------------:|
+|`match_l1_l2_scale=True` |      $L_2$     |    $L_2^1$    |    $L_2^1$    |
+|:-----------------------:|:--------------:|:-------------:|:-------------:|
 |**$\text{SAE}$**         |         |        |
 |**$\text{SAE}_\text{N}$**|         |        |
 
-|$\beta$                  |      $L_2$     |    $L_2^1$    |    $L_2^1$    |
-|:------------------------|:--------------:|:-------------:|:-------------:|
+|`match_l1_l2_scale=False`|      $L_2$     |    $L_2^1$    |    $L_2^1$    |
+|:-----------------------:|:--------------:|:-------------:|:-------------:|
 |**$\text{SAE}$**         |         |        |
 |**$\text{SAE}_\text{N}$**|         |        |
 
