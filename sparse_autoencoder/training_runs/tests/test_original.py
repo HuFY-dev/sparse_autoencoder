@@ -46,6 +46,7 @@ def train_gpt_small_mlp_layers(
             loss=LossHyperparameters(
                 l1_coefficient=Parameter(max=1e-3, min=1e-4),
                 l2_normalization_method=Parameter(value="none"),
+                match_l1_l2_scale=Parameter(value=False),
             ),
             optimizer=OptimizerHyperparameters(
                 lr=Parameter(max=0.001, min=0.00001),
@@ -66,6 +67,7 @@ def train_gpt_small_mlp_layers(
             autoencoder=AutoencoderHyperparameters(
                 expansion_factor=Parameter(value=expansion_factor),
                 sae_type=Parameter("sae"),
+                noise_scale=Parameter(0), # This shouldn't matter for the original SAE.
             ),
             pipeline=PipelineHyperparameters(
                 max_activations=Parameter(20_000_000),
