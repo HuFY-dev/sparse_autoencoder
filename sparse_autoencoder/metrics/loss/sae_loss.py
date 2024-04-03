@@ -163,7 +163,7 @@ class SparseAutoencoderLoss(Metric):
         Returns:
             Normalized absolute sum of the learned activations.
         """
-        return absolute_loss * source_activations.norm(dim=-1, p=l1_normalization_power)
+        return absolute_loss * source_activations.norm(dim=-1, p=2).pow(l1_normalization_power)
 
     def update(
         self,
