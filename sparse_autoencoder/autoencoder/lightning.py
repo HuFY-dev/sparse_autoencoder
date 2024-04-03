@@ -137,7 +137,7 @@ class LitSparseAutoencoder(LightningModule):
             # loss and l1 metrics). Note the metric that goes first must calculate all the states
             # needed by the rest of the group.
             compute_groups=[
-                ["loss", "l1", "l2"],
+                ["loss", "l1", "raw_l2", "normalized_l2"],
                 ["activity"],
                 ["l0"],
             ],
