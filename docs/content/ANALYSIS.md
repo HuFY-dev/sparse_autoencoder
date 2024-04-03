@@ -54,7 +54,7 @@ In fact, it does. Firstly, the norm of residuals are NOT from uniform in large l
 GPT2-small:
 
 <div align="center">
-    <img src="./images/GPT2norms.png" alt="Distribution of GPT2 residual stream norms across layers"
+    <img src="../../images/GPT2norms.png" alt="Distribution of GPT2 residual stream norms across layers"
     width="400">
 </div>
 
@@ -74,11 +74,11 @@ Let's investigate the feature activation corresponding to the top 1% residual st
 their norms. Here are the $L_0$ and $L_1$ norms of the feature activations:
 
 <div align="center">
-    <img src=".\images\feature_act_l0.png" alt="L0 norm of feature activations" width=600>
+    <img src="../../images/feature_act_l0.png" alt="L0 norm of feature activations" width=600>
 </div>
 
 <div align="center">
-    <img src=".\images\feature_act_l1.png" alt="L1 norm of feature activations" width=600>
+    <img src="../../images/feature_act_l1.png" alt="L1 norm of feature activations" width=600>
 </div>
 
 This does not look like things are working properly :(
@@ -107,7 +107,7 @@ where we no longer constrain $W_d$ to be column normal and let
 $\text{act}(x)=\text{tanh}(\text{ReLU}(x))$, then the activation looks like this:
 
 <div align="center">
-    <img src=".\images\activation.png" alt="Plot of the activation function" width=400>
+    <img src="../../images/activation.png" alt="Plot of the activation function" width=400>
 </div>
 
 The purpose of this is to constrain feature activations to the range $(0,1)$, so the $L_1$
