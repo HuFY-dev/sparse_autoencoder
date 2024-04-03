@@ -115,7 +115,7 @@ norm will not explode for high-norm residuals. We can still learn the reconstruc
 norm decoder, and use it as a feature dictionary that contains information on the norm of residual
 states.
 
-This is implemented and you can set the autoencoder hyperparameter `sae_type={"none"|"normalized_sae"}` to
+This is implemented and you can set the autoencoder hyperparameter `sae_type = {"none"|"normalized_sae"}` to
 use it.
 
 ## Adding small perturbations before applying activation
@@ -137,6 +137,9 @@ perturbation. The encoder is encouraged to learn $W_ex+b_e$ of larger magnitude 
 either positive or negative, which after activation becomes $0$ or close to $1$. This is a great
 thing as this makes the $L_1$ loss to be very close to $L_0$, which better indicates sparsity.
 
+This is implemented and you can set the autoencoder hyperparameter `noise_scale: float = 1` to
+use it.
+
 ### Normalization of $L_2$ loss
 
 Now that we have dealt with the $L_1$ loss, what about the $L_2$ term? This can be more complicated.
@@ -148,11 +151,11 @@ $||x||_2$ and prevents it from exploding as norms grows larger than $10^2$. I wi
 regular $L_2$, $L_2/||x||_2$, and $L_2/||x||_2^2$ as $L_2$, $L_2^1$, and $L_2^2$, respectively.
 
 This is implemented and you can set the loss hyperparameter
-`l2_normalization_method={"none"|"input_norm"|"input_norm_squared"}` to use it.
+`l2_normalization_method = {"none"|"input_norm"|"input_norm_squared"}` to use it.
 
-### Adjusting $\alpha$
+### Match the scale of $L_1$ with $L_2$
 
-After the adjustment, our loss is now
+After the previous adjustment to $L_2$, our loss is now
 
 $$L(x',x)=\alpha||\text{tanh}(\text{ReLU}(W_e \hat{x} + b_e'))||_1+2||x||_2^k(1-cos(x',x))$$
 
@@ -164,23 +167,15 @@ imbalance between the $L_1$ term and $L_2$ term: The $L_1$ is of the scale `hidd
 constant across layers when $k \neq 0$. Hence, if we use the same $L_1$ coefficient $\alpha$ across
 layers, there will be some layers where $L_1$ dominates and some layers where reconstruction dominates.
 
-There is also a (rather) simple way to fix this:
+To fix this, we simply scale the $L_1$ loss term by $||x||_2^k$, resulting in
 
-First collect a sample of residual states and calculate the norm of these states of every layer,
-denoted as $\set{n_i}$ for $i$ as the layer indices. Then take 
+$$L(x',x)=\alpha||x||_2^k||\text{tanh}(\text{ReLU}(W_e \hat{x} +
+b_e'))||_1+2||x||_2^k(1-cos(x',x))$$
 
-$$L_i(x',x)=\beta_i||\text{tanh}(\text{ReLU}(W_e \hat{x} + b_e'))||_1+2||x||_2^k(1-cos(x',x))$$
+so the $L_1$ term and the $L_2$ term will be similar in scale.
 
-where
-
-$$\beta_i=\alpha n_i^k$$
-
-Then we will have a global factor $\alpha$ that controls the sparsity-reconstruction tradeoff, and
-in each layer the actual $L_1$ coefficient is calculated in consideration of the average residual
-norm to ensure cross-layer consistency. I will denote the original approach and this modified
-approach as $\alpha$- and $\beta$-coeff, respectively.
-
-**NOTE**: $\beta$-coeff NOT YET IMPLEMENTED
+This is implemented and you can set the loss hyperparameter
+`match_l1_l2_scale: bool = True` to use it.
 
 ## Training
 

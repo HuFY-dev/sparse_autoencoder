@@ -51,3 +51,13 @@ to ensure that the loss is not dominated by activations of high magnitudes (ofte
 uninterpretable activations from the <|endoftext|> token).
 """
 ```
+
+```python
+match_l1_l2_scale: Parameter[bool] = field(default=Parameter(value=False))
+"""Whether to match the scale of the L1 and L2 losses.
+
+If True, the L1 loss is normalized by the same power of the input norm as the L2 loss. This can
+make the L1 and L2 loss more balanced across layers and better controlled by the L1 coefficient.
+More detailed analysis can be found in ./docs/content/ANALYSIS.md.
+"""
+```
