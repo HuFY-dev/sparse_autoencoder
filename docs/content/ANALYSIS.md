@@ -167,12 +167,13 @@ imbalance between the $L_1$ term and $L_2$ term: The $L_1$ is of the scale `hidd
 constant across layers when $k \neq 0$. Hence, if we use the same $L_1$ coefficient $\alpha$ across
 layers, there will be some layers where $L_1$ dominates and some layers where reconstruction dominates.
 
-To fix this, we simply scale the $L_1$ loss term by $||x||_2^k$, resulting in
+To fix this, we can scale the $L_1$ by the mean norm of every layer in the current batch:
 
-$$L(x',x)=\alpha||x||_2^k||\text{tanh}(\text{ReLU}(W_e \hat{x} +
+$$L_i(x',x)=\beta_i||\text{tanh}(\text{ReLU}(W_e \hat{x} +
 b_e'))||_1+2||x||_2^k(1-cos(x',x))$$
 
-so the $L_1$ term and the $L_2$ term will be similar in scale.
+where $\beta_i=\alpha\cdot{\text{mean}(||x||_2^k)}$ in layer $i$. Then the $L_1$ term and the $L_2$
+term will be similar in scale.
 
 This is implemented and you can set the loss hyperparameter
 `match_l1_l2_scale: bool = True` to use it.
