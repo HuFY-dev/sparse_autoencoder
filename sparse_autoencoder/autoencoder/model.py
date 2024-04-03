@@ -61,7 +61,7 @@ class SparseAutoencoderConfig(BaseModel):
           non-unit norm decoder.
     """
     
-    noise_scale: float = 0
+    noise_scale: float = 1
     """Noise scale for the tanh encoder.
     
     Adds Gaussian noise of N(0, `noise_scale`) to the output of the encoder before activation. Only

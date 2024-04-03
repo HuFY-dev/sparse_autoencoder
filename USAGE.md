@@ -12,7 +12,7 @@ Default is "sae" which is the original implementation of SAE
 ```
 
 ```python
-noise_scale: Parameter[float] = field(default=Parameter(0.0))
+noise_scale: Parameter[float] = field(default=Parameter(1.0))
 """Noise scale.
 
 Scale of the Gaussian noise to add to the output before activation.

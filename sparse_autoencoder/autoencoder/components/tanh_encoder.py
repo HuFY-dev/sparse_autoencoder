@@ -101,7 +101,7 @@ class TanhEncoder(Module):
         input_features: PositiveInt,
         learnt_features: PositiveInt,
         n_components: PositiveInt | None,
-        noise_scale: float = 0,
+        noise_scale: float = 1,
     ):
         """Initialize the linear encoder layer.
 
