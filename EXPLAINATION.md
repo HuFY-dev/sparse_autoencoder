@@ -148,7 +148,7 @@ $||x||_2$ and prevents it from exploding as norms grows larger than $10^2$. I wi
 regular $L_2$, $L_2/||x||_2$, and $L_2/||x||_2^2$ as $L_2$, $L_2^1$, and $L_2^2$, respectively.
 
 This is implemented and you can set the loss hyperparameter
-`normalization_method={"none"|"input_norm"|"input_norm_squared"}` to use it.
+`l2_normalization_method={"none"|"input_norm"|"input_norm_squared"}` to use it.
 
 ### Adjusting $\alpha$
 

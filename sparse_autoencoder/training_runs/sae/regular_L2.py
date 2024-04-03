@@ -45,7 +45,7 @@ def train_gpt_small_mlp_layers(
         parameters=Hyperparameters(
             loss=LossHyperparameters(
                 l1_coefficient=Parameter(max=1e-3, min=1e-4),
-                normalization_method=Parameter(value="none"),
+                l2_normalization_method=Parameter(value="none"),
             ),
             optimizer=OptimizerHyperparameters(
                 lr=Parameter(max=0.001, min=0.00001),

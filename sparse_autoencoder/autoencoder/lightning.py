@@ -48,7 +48,7 @@ class LitSparseAutoencoderConfig(SparseAutoencoderConfig):
 
     resample_threshold_is_dead_portion_fires: NonNegativeFloat = 0.0
 
-    normalization_method: str = "none"
+    l2_normalization_method: str = "none"
 
     def model_post_init(self, __context: Any) -> None:  # noqa: ANN401
         """Model post init validation.
@@ -97,7 +97,7 @@ class LitSparseAutoencoder(LightningModule):
             num_components,
             config.l1_coefficient,
             keep_batch_dim=True,
-            normalization_method=config.normalization_method,
+            l2_normalization_method=config.l2_normalization_method,
         )
 
         self.train_metrics = MetricCollection(
@@ -113,7 +113,7 @@ class LitSparseAutoencoder(LightningModule):
                 "l2": add_component_names(
                     L2ReconstructionLoss(
                         num_components,
-                        normalization_method=config.normalization_method,
+                        l2_normalization_method=config.l2_normalization_method,
                     ),
                     prefix="loss/l2_reconstruction",
                 ),
@@ -121,7 +121,7 @@ class LitSparseAutoencoder(LightningModule):
                     SparseAutoencoderLoss(
                         num_components,
                         config.l1_coefficient,
-                        normalization_method=config.normalization_method,
+                        l2_normalization_method=config.l2_normalization_method,
                     ),
                     prefix="loss/total",
                 ),

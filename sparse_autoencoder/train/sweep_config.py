@@ -123,7 +123,7 @@ class LossHyperparameters(NestedParameter):
     starting point for the L1 coefficient is 1e-3.
     """
 
-    normalization_method: Parameter[str] = field(default=Parameter(value="none"))
+    l2_normalization_method: Parameter[str] = field(default=Parameter(value="none"))
     """Normalize by input norm.
     
     Choices: ["none", "input_norm", "input_norm_squared"]
@@ -159,7 +159,7 @@ class LossRuntimeHyperparameters(TypedDict):
 
     l1_coefficient: float
 
-    normalization_method: str
+    l2_normalization_method: str
 
 
 @dataclass(frozen=True)

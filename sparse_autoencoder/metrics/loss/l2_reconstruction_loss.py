@@ -59,7 +59,7 @@ class L2ReconstructionLoss(Metric):
     # Settings
     _num_components: int
     _keep_batch_dim: bool
-    _normalization_power: int
+    _l2_normalization_power: int
 
     @property
     def keep_batch_dim(self) -> bool:
@@ -93,19 +93,19 @@ class L2ReconstructionLoss(Metric):
             )
 
     @property
-    def normalization_power(self) -> int:
+    def l2_normalization_power(self) -> int:
         """The power of ||x||_2 in the normalization step.
 
         The normalization is done by dividing the MSE by the norm of the input activations raised to
         this power. Normally it should be one of {0, 1, 2}. This is useful for e.g. normalizing the
         loss by the input norm. For regular L2,this should be 0.
         """
-        return self._normalization_power
+        return self._l2_normalization_power
 
-    @normalization_power.setter
-    def normalization_power(self, normalization_power: int) -> None:
+    @l2_normalization_power.setter
+    def l2_normalization_power(self, l2_normalization_power: int) -> None:
         """Set the normalization power."""
-        self._normalization_power = normalization_power
+        self._l2_normalization_power = l2_normalization_power
         self.reset()  # Reset the metric to update the state
 
     # State
@@ -122,20 +122,20 @@ class L2ReconstructionLoss(Metric):
         num_components: PositiveInt = 1,
         *,
         keep_batch_dim: bool = False,
-        normalization_method: str = "none",
+        l2_normalization_method: str = "none",
     ) -> None:
         """Initialise the L2 reconstruction loss."""
         super().__init__()
         self._num_components = num_components
         self.keep_batch_dim = keep_batch_dim
-        if normalization_method == "none":
-            self.normalization_power = 0
-        elif normalization_method == "input_norm":
-            self.normalization_power = 1
-        elif normalization_method == "input_norm_squared":
-            self.normalization_power = 2
+        if l2_normalization_method == "none":
+            self.l2_normalization_power = 0
+        elif l2_normalization_method == "input_norm":
+            self.l2_normalization_power = 1
+        elif l2_normalization_method == "input_norm_squared":
+            self.l2_normalization_power = 2
         else:
-            error_message = f"Normalization method {normalization_method} not recognised."
+            error_message = f"Normalization method {l2_normalization_method} not recognised."
             raise ValueError(error_message)
         self.add_state(
             "num_activation_vectors",
@@ -161,17 +161,17 @@ class L2ReconstructionLoss(Metric):
             Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL, Axis.INPUT_OUTPUT_FEATURE)
         ],
         mse: Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL)],
-        normalization_power: int = 0,
+        l2_normalization_power: int = 0,
     ) -> Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL)]:
         """Normalize the mse by input norm.
 
-        When `normalization_power` is set to 0, this is equivalent to not normalizing the loss.
+        When `l2_normalization_power` is set to 0, this is equivalent to not normalizing the loss.
         When set to 1, this is equivalent to normalizing the loss by the input norm, making the
         loss similar to (1 - cosine similarity) * input norm. When set to 2, this is equivalent
         to normalizing the loss by the input norm squared, making the loss similar to (1 - cosine
         similarity).
         """
-        return mse / source_activations.norm(dim=-1, p=2).pow(normalization_power)
+        return mse / source_activations.norm(dim=-1, p=2).pow(l2_normalization_power)
 
     def update(
         self,
@@ -201,7 +201,7 @@ class L2ReconstructionLoss(Metric):
         """
         mse = self.calculate_mse(decoded_activations, source_activations)
         mse = self.normalize_mse(
-            source_activations, mse, normalization_power=self.normalization_power
+            source_activations, mse, l2_normalization_power=self.l2_normalization_power
         )
 
         if self.keep_batch_dim:

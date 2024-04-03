@@ -23,7 +23,7 @@ This is only applicable for normalized_sae that uses the TanhEncoder.
 ## `LossHyperparameters`
 
 ```python
-normalization_method: Parameter[str] = field(default=Parameter(value="none"))
+l2_normalization_method: Parameter[str] = field(default=Parameter(value="none"))
 """Normalize by input norm.
 
 Choices: ["none", "input_norm", "input_norm_squared"]
