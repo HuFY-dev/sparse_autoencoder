@@ -118,6 +118,25 @@ states.
 This is implemented and you can set the autoencoder hyperparameter `sae_type={"none"|"normalized_sae"}` to
 use it.
 
+## Adding small perturbations before applying activation
+
+However, only applying this activation does not work, as the model can learn to minimize $L_1$ by scaling the
+feature activation to a very small magnitude and make the norm of vectors in the decoder dictionary
+very large (also discussed in [the original SAE paper](https://arxiv.org/pdf/2309.08600.pdf) page 3
+footnote 3).
+
+We can get around this by adding small perturbation to the encoder before activation:
+
+$$\text{Encoder}(x)=\text{act}(W_ex+b_e+\epsilon)$$
+
+where $\epsilon\sim\mathcal{N}(0,\sigma)$ with $\sigma$ as a hyperparameter to control the noise
+scale.
+
+In this way, $W_ex+b_e$ will not converge to small positive values as small values are sensitive to
+perturbation. The encoder is encouraged to learn $W_ex+b_e$ of larger magnitude at each entry,
+either positive or negative, which after activation becomes $0$ or close to $1$. This is a great
+thing as this makes the $L_1$ loss to be very close to $L_0$, which better indicates sparsity.
+
 ### Normalization of $L_2$ loss
 
 Now that we have dealt with the $L_1$ loss, what about the $L_2$ term? This can be more complicated.
