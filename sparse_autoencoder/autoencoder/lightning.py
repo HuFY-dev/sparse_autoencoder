@@ -91,7 +91,10 @@ class LitSparseAutoencoder(LightningModule):
 
         # Create the loss & metrics
         self.loss_fn = SparseAutoencoderLoss(
-            num_components, config.l1_coefficient, keep_batch_dim=True
+            num_components,
+            config.l1_coefficient,
+            keep_batch_dim=True,
+            match_l1_l2_scale=config.match_l1_l2_scale,
         )
 
         self.train_metrics = MetricCollection(
@@ -108,7 +111,11 @@ class LitSparseAutoencoder(LightningModule):
                     L2ReconstructionLoss(num_components), prefix="loss/l2_reconstruction"
                 ),
                 "loss": add_component_names(
-                    SparseAutoencoderLoss(num_components, config.l1_coefficient),
+                    SparseAutoencoderLoss(
+                        num_components, 
+                        config.l1_coefficient,
+                        match_l1_l2_scale=config.match_l1_l2_scale,
+                    ),
                     prefix="loss/total",
                 ),
             },

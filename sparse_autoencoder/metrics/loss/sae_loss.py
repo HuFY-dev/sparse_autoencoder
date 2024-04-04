@@ -30,6 +30,7 @@ class SparseAutoencoderLoss(Metric):
     _num_components: int
     _keep_batch_dim: bool
     _l1_coefficient: float
+    _l1_normalization_power: int
 
     @property
     def keep_batch_dim(self) -> bool:
@@ -88,12 +89,15 @@ class SparseAutoencoderLoss(Metric):
         l1_coefficient: PositiveFloat = 0.001,
         *,
         keep_batch_dim: bool = False,
+        match_l1_l2_scale: bool = False,
     ):
         """Initialise the metric."""
         super().__init__()
         self._num_components = num_components
         self.keep_batch_dim = keep_batch_dim
         self._l1_coefficient = l1_coefficient
+        # Naive implementation. Default to not match scale.
+        self._l1_normalization_power = 1 if match_l1_l2_scale else 0
 
         # Add the state
         self.add_state(
@@ -101,6 +105,28 @@ class SparseAutoencoderLoss(Metric):
             default=torch.tensor(0, dtype=torch.int64),
             dist_reduce_fx="sum",
         )
+
+    @staticmethod
+    def normalize_abs_sum(
+        source_activations: Float[
+            Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL, Axis.INPUT_OUTPUT_FEATURE)
+        ],
+        absolute_loss: Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL)],
+        l1_normalization_power: int,
+    ) -> Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL)]:
+        """Normalize the absolute sum of the learned activations.
+        
+        This normalization matches the L1 loss to the same scale as the MSE loss. 
+
+        Args:
+            source_activations: Source activations.
+            absolute_loss: The original L1 loss.
+            l1_normalization_power: L1 normalization power.
+        Returns:
+            Normalized absolute sum of the learned activations.
+        """
+        layer_norm_mean = source_activations.norm(dim=-1, p=2).mean(dim=0, keepdim=True)
+        return absolute_loss * layer_norm_mean.pow(l1_normalization_power)
 
     def update(
         self,
@@ -117,6 +143,9 @@ class SparseAutoencoderLoss(Metric):
     ) -> None:
         """Update the metric."""
         absolute_loss = L1AbsoluteLoss.calculate_abs_sum(learned_activations)
+        absolute_loss = self.normalize_abs_sum(
+            source_activations, absolute_loss, self._l1_normalization_power
+        )
         mse = L2ReconstructionLoss.calculate_mse(decoded_activations, source_activations)
 
         if self.keep_batch_dim:

@@ -48,6 +48,13 @@ class SparseAutoencoderConfig(BaseModel):
     If `None`, the SAE is assumed to be trained on just one component (in this case the model won't
     contain a component axis in any of the parameters).
     """
+    
+    match_l1_l2_scale: bool = False
+    """Whether to match the scale of the L1 and L2 losses.
+    
+    This is useful if the the source model's latent states varies in norm across layers, and you
+    want a more consistent behavior controlled by the l1_coefficient across layers.
+    """
 
 
 class SparseAutoencoderState(BaseModel, arbitrary_types_allowed=True):
@@ -284,6 +291,7 @@ class SparseAutoencoder(Module):
             n_input_features=state.config.n_input_features,
             n_learned_features=state.config.n_learned_features,
             n_components=state.config.n_components if component_idx is None else None,
+            match_l1_l2_scale=state.config.match_l1_l2_scale,
         )
         state_dict = (
             SparseAutoencoder.get_single_component_state_dict(state, component_idx)
