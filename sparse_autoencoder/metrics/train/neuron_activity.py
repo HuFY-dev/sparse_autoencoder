@@ -108,5 +108,5 @@ class NeuronActivityMetric(Metric):
         )
 
         return torch.sum(
-            self.neuron_fired_count <= threshold_activations, dim=-1, dtype=torch.int64
+            self.neuron_fired_count <= threshold_activations, dim=-1, dtype=torch.float32
         )
