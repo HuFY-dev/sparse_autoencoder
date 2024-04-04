@@ -44,7 +44,7 @@ def train_gpt_small_mlp_layers(
     sweep_config = SweepConfig(
         parameters=Hyperparameters(
             loss=LossHyperparameters(
-                l1_coefficient=Parameter(max=1e-3, min=1e-4),
+                l1_coefficient=Parameter(max=2e-3, min=5e-4),
                 l2_normalization_method=Parameter(value="none"),
                 match_l1_l2_scale=Parameter(value=False),
             ),
