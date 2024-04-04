@@ -219,6 +219,7 @@ class Pipeline:
             enable_model_summary=False,
             enable_checkpointing=False,
             precision="16-mixed",
+            log_every_n_steps=self.log_frequency,
         )
         trainer.fit(self.autoencoder, activations_dataloader)
 
