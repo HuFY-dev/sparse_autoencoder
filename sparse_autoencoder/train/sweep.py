@@ -60,6 +60,8 @@ def setup_autoencoder(
     config = LitSparseAutoencoderConfig(
         n_input_features=autoencoder_input_dim,
         n_learned_features=autoencoder_input_dim * expansion_factor,
+        sae_type=hyperparameters["autoencoder"]["sae_type"],
+        noise_scale=hyperparameters["autoencoder"]["noise_scale"],
         n_components=len(hyperparameters["source_model"]["cache_names"]),
         component_names=hyperparameters["source_model"]["cache_names"],
         l1_coefficient=hyperparameters["loss"]["l1_coefficient"],

@@ -18,7 +18,9 @@ from torch.nn import Module, Parameter
 from torch.serialization import FILE_LIKE
 import wandb
 
+from sparse_autoencoder.autoencoder.components.linear_decoder import LinearDecoder
 from sparse_autoencoder.autoencoder.components.linear_encoder import LinearEncoder
+from sparse_autoencoder.autoencoder.components.tanh_encoder import TanhEncoder
 from sparse_autoencoder.autoencoder.components.tied_bias import TiedBias, TiedBiasPosition
 from sparse_autoencoder.autoencoder.components.unit_norm_decoder import UnitNormDecoder
 from sparse_autoencoder.autoencoder.types import ResetOptimizerParameterDetails
@@ -47,6 +49,22 @@ class SparseAutoencoderConfig(BaseModel):
     This is useful if you want to train the SAE on several components of the source model at once.
     If `None`, the SAE is assumed to be trained on just one component (in this case the model won't
     contain a component axis in any of the parameters).
+    """
+    
+    sae_type: str = "sae"
+    """The type of SAE to use.
+    
+    Options:
+        - "sae": Default Sparse Autoencoder with unit norm decoder.
+        - "normalized_sae": Sparse Autoencoder using the tanh(ReLU()) activation function and
+          non-unit norm decoder.
+    """
+
+    noise_scale: float = 1
+    """Noise scale for the tanh encoder.
+    
+    Adds Gaussian noise of N(0, `noise_scale`) to the output of the encoder before activation. Only
+    used if `sae_type` is "normalized_sae". Default is 0 (no noise).
     """
 
     l1_normalization_power: float = 0.0
@@ -114,10 +132,10 @@ class SparseAutoencoder(Module):
     pre_encoder_bias: TiedBias
     """Pre-Encoder Bias."""
 
-    encoder: LinearEncoder
+    encoder: LinearEncoder | TanhEncoder
     """Encoder."""
 
-    decoder: UnitNormDecoder
+    decoder: UnitNormDecoder | LinearDecoder
     """Decoder."""
 
     post_decoder_bias: TiedBias
@@ -136,6 +154,9 @@ class SparseAutoencoder(Module):
         Args:
             config: Model config.
             geometric_median_dataset: Estimated geometric median of the dataset.
+
+        Raises:
+            ValueError: If the specified `SAE` type in `config` is unknown or not supported.
         """
         super().__init__()
 
@@ -160,17 +181,33 @@ class SparseAutoencoder(Module):
         # Initialize the components
         self.pre_encoder_bias = TiedBias(self.tied_bias, TiedBiasPosition.PRE_ENCODER)
 
-        self.encoder = LinearEncoder(
-            input_features=config.n_input_features,
-            learnt_features=config.n_learned_features,
-            n_components=config.n_components,
-        )
+        if config.sae_type == "sae":
+            self.encoder = LinearEncoder(
+                input_features=config.n_input_features,
+                learnt_features=config.n_learned_features,
+                n_components=config.n_components,
+            )
+            self.decoder = UnitNormDecoder(
+                learnt_features=config.n_learned_features,
+                decoded_features=config.n_input_features,
+                n_components=config.n_components,
+            )
+        elif config.sae_type == "normalized_sae":
+            self.encoder = TanhEncoder(
+                input_features=config.n_input_features,
+                learnt_features=config.n_learned_features,
+                n_components=config.n_components,
+                noise_scale=config.noise_scale,
+            )
+            self.decoder = LinearDecoder(
+                learnt_features=config.n_learned_features,
+                decoded_features=config.n_input_features,
+                n_components=config.n_components,
+            )
+        else:
+            error_message = f"Unknown SAE type: {config.sae_type}"
+            raise ValueError(error_message)
 
-        self.decoder = UnitNormDecoder(
-            learnt_features=config.n_learned_features,
-            decoded_features=config.n_input_features,
-            n_components=config.n_components,
-        )
 
         self.post_decoder_bias = TiedBias(self.tied_bias, TiedBiasPosition.POST_DECODER)
 
@@ -228,7 +265,8 @@ class SparseAutoencoder(Module):
 
         This can be used to e.g. constrain weights to unit norm.
         """
-        self.decoder.constrain_weights_unit_norm()
+        if self.config.sae_type == "sae":
+            self.decoder.constrain_weights_unit_norm()
 
     @staticmethod
     @validate_call
@@ -295,6 +333,8 @@ class SparseAutoencoder(Module):
             n_input_features=state.config.n_input_features,
             n_learned_features=state.config.n_learned_features,
             n_components=state.config.n_components if component_idx is None else None,
+            sae_type=state.config.sae_type,
+            noise_scale=state.config.noise_scale,
             l1_normalization_power=state.config.l1_normalization_power,
         )
         state_dict = (
