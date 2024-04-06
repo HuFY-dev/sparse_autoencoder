@@ -95,6 +95,7 @@ class LitSparseAutoencoder(LightningModule):
             config.l1_coefficient,
             keep_batch_dim=True,
             l1_normalization_power=config.l1_normalization_power,
+            l2_normalization_power=config.l2_normalization_power,
         )
 
         self.train_metrics = MetricCollection(
@@ -115,6 +116,7 @@ class LitSparseAutoencoder(LightningModule):
                         num_components,
                         config.l1_coefficient,
                         l1_normalization_power=config.l1_normalization_power,
+                        l2_normalization_power=config.l2_normalization_power,
                     ),
                     prefix="loss/total",
                 ),

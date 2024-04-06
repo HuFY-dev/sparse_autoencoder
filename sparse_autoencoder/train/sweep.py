@@ -66,6 +66,7 @@ def setup_autoencoder(
         component_names=hyperparameters["source_model"]["cache_names"],
         l1_coefficient=hyperparameters["loss"]["l1_coefficient"],
         l1_normalization_power=hyperparameters["loss"]["l1_normalization_power"],
+        l2_normalization_power=hyperparameters["loss"]["l2_normalization_power"],
         resample_interval=hyperparameters["activation_resampler"]["resample_interval"],
         max_n_resamples=hyperparameters["activation_resampler"]["max_n_resamples"],
         resample_dead_neurons_dataset_size=hyperparameters["activation_resampler"][

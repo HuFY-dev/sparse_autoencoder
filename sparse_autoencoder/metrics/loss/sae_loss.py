@@ -31,6 +31,7 @@ class SparseAutoencoderLoss(Metric):
     _keep_batch_dim: bool
     _l1_coefficient: float
     _l1_normalization_power: float
+    _l2_normalization_power: float
 
     @property
     def keep_batch_dim(self) -> bool:
@@ -90,6 +91,7 @@ class SparseAutoencoderLoss(Metric):
         *,
         keep_batch_dim: bool = False,
         l1_normalization_power: float = 0.0,
+        l2_normalization_power: float = 0.0,
     ):
         """Initialise the metric."""
         super().__init__()
@@ -97,6 +99,7 @@ class SparseAutoencoderLoss(Metric):
         self.keep_batch_dim = keep_batch_dim
         self._l1_coefficient = l1_coefficient
         self._l1_normalization_power = l1_normalization_power
+        self._l2_normalization_power = l2_normalization_power
 
         # Add the state
         self.add_state(
@@ -128,6 +131,28 @@ class SparseAutoencoderLoss(Metric):
         layer_norm_mean = source_activations.norm(dim=-1, p=2).mean(dim=0, keepdim=True)
         return absolute_loss * layer_norm_mean.pow(l1_normalization_power)
 
+    @staticmethod
+    def normalize_mse(
+        source_activations: Float[
+            Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL, Axis.INPUT_OUTPUT_FEATURE)
+        ],
+        mse: Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL)],
+        l2_normalization_power: float = 0,
+    ) -> Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL)]:
+        """Normalize the mse by input norm.
+        
+        When `l2_normalization_power` is set to 0, this is equivalent to not normalizing the loss.
+        When set to 1, this is equivalent to normalizing the loss by the input norm, making the
+        loss similar to (1 - cosine similarity) * input norm. When set to 2, this is equivalent
+        to normalizing the loss by the input norm squared, making the loss similar to (1 - cosine
+        similarity).
+        
+        Note that this is different from the normalization of L1 as the purpose of this
+        normalization is to reduce the effect of high-norm outliers in the input activations, while
+        the L1 normalization is to match the scale of the L1 and L2 losses.
+        """
+        return mse / source_activations.norm(dim=-1, p=2).pow(l2_normalization_power)
+
     def update(
         self,
         source_activations: Float[
@@ -147,6 +172,7 @@ class SparseAutoencoderLoss(Metric):
             source_activations, absolute_loss, self._l1_normalization_power
         )
         mse = L2ReconstructionLoss.calculate_mse(decoded_activations, source_activations)
+        mse = self.normalize_mse(source_activations, mse, self._l2_normalization_power)
 
         if self.keep_batch_dim:
             self.absolute_loss.append(absolute_loss)  # type: ignore

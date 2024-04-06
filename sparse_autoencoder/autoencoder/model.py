@@ -77,6 +77,21 @@ class SparseAutoencoderConfig(BaseModel):
     L2 in layers with large norm, and L1 in layers with small norm. We suggest using a value in the
     range of 0.8 to 1.2.
     """
+    
+    l2_normalization_power: float = 0.0
+    """Whether to normalize the L2 penalty by the norm of the activations.
+    
+    This is useful if there are high-norm outliers in the input activations that might cause the
+    model to overfit to these outliers. The purpose of this normalization is to reduce the effect of
+    high-norm outliers in the input activations. When set to 0, this is equivalent to not
+    normalizing the loss. When set to 1, this is equivalent to normalizing the loss by the input
+    norm, making the loss similar to (1 - cosine similarity) * input norm. When set to 2, this is
+    equivalent to normalizing the loss by the input norm squared, making the loss similar to (1 -
+    cosine similarity). We suggest using a value in the range of 0 to 2.
+    
+    Note that this is different from the L1 normalization power, as the L1 normalization power is
+    just to match the scale of the L1 and L2 losses.
+    """
 
 
 class SparseAutoencoderState(BaseModel, arbitrary_types_allowed=True):
