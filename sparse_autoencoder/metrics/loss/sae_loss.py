@@ -30,7 +30,7 @@ class SparseAutoencoderLoss(Metric):
     _num_components: int
     _keep_batch_dim: bool
     _l1_coefficient: float
-    _l1_normalization_power: int
+    _l1_normalization_power: float
 
     @property
     def keep_batch_dim(self) -> bool:
@@ -89,15 +89,14 @@ class SparseAutoencoderLoss(Metric):
         l1_coefficient: PositiveFloat = 0.001,
         *,
         keep_batch_dim: bool = False,
-        match_l1_l2_scale: bool = False,
+        l1_normalization_power: float = 0.0,
     ):
         """Initialise the metric."""
         super().__init__()
         self._num_components = num_components
         self.keep_batch_dim = keep_batch_dim
         self._l1_coefficient = l1_coefficient
-        # Naive implementation. Default to not match scale.
-        self._l1_normalization_power = 1 if match_l1_l2_scale else 0
+        self._l1_normalization_power = l1_normalization_power
 
         # Add the state
         self.add_state(
@@ -112,16 +111,17 @@ class SparseAutoencoderLoss(Metric):
             Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL, Axis.INPUT_OUTPUT_FEATURE)
         ],
         absolute_loss: Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL)],
-        l1_normalization_power: int,
+        l1_normalization_power: float,
     ) -> Float[Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL)]:
         """Normalize the absolute sum of the learned activations.
-        
-        This normalization matches the L1 loss to the same scale as the MSE loss. 
+
+        This normalization matches the L1 loss to the same scale as the MSE loss.
 
         Args:
             source_activations: Source activations.
             absolute_loss: The original L1 loss.
             l1_normalization_power: L1 normalization power.
+
         Returns:
             Normalized absolute sum of the learned activations.
         """

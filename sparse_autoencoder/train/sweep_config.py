@@ -102,12 +102,16 @@ class LossHyperparameters(NestedParameter):
     using more features, or using a lower L1 coefficient. If your expansion factor is 2, then a good
     starting point for the L1 coefficient is 1e-3.
     """
-    
-    match_l1_l2_scale: Parameter[bool] = field(default=Parameter(value=False))
-    """Whether to match the scale of the L1 and L2 losses.
-    
+
+    l1_normalization_power: Parameter[float] = field(default=Parameter(value=0))
+    """Whether to normalize the L1 penalty by the norm of the activations.
+
     This is useful if the the source model's latent states varies in norm across layers, and you
-    want a more consistent behavior controlled by the l1_coefficient across layers.
+    want a more consistent behavior controlled by the l1_coefficient across layers. More
+    specifically, the scale of the L2 loss is ||x||_2^2, and the scale of the L1 loss is
+    ||x||_2 or constant. If the norm of x varies across layers, then the loss will be dominated by
+    L2 in layers with large norm, and L1 in layers with small norm. We suggest using a value in the
+    range of 0.8 to 1.2.
     """
 
 
@@ -115,8 +119,8 @@ class LossRuntimeHyperparameters(TypedDict):
     """Loss runtime hyperparameters."""
 
     l1_coefficient: float
-    
-    match_l1_l2_scale: bool
+
+    l1_normalization_power: float
 
 
 @dataclass(frozen=True)
