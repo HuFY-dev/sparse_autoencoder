@@ -95,8 +95,8 @@ class LitSparseAutoencoder(LightningModule):
             num_components,
             config.l1_coefficient,
             keep_batch_dim=True,
-            l2_normalization_method=config.l2_normalization_method,
-            match_l1_l2_scale=config.match_l1_l2_scale,
+            l1_normalization_power=config.l1_normalization_power,
+            l2_normalization_power=config.l2_normalization_power,
         )
 
         self.train_metrics = MetricCollection(
@@ -109,17 +109,17 @@ class LitSparseAutoencoder(LightningModule):
                 "l1": add_component_names(
                     L1AbsoluteLoss(num_components), prefix="loss/l1_learned_activations"
                 ),
-                "raw_l2": add_component_names(
+                "l2": add_component_names(
                     L2ReconstructionLoss(
                         num_components,
-                        l2_normalization_method="none",
+                        l2_normalization_power=0
                     ),
-                    prefix="loss/raw_l2_reconstruction",
+                    prefix="loss/l2_reconstruction",
                 ),
                 "normalized_l2": add_component_names(
                     L2ReconstructionLoss(
                         num_components,
-                        l2_normalization_method=config.l2_normalization_method,
+                        l2_normalization_power=config.l2_normalization_power,
                     ),
                     prefix="loss/normalized_l2_reconstruction",
                 ),
@@ -127,8 +127,8 @@ class LitSparseAutoencoder(LightningModule):
                     SparseAutoencoderLoss(
                         num_components,
                         config.l1_coefficient,
-                        l2_normalization_method=config.l2_normalization_method,
-                        match_l1_l2_scale=config.match_l1_l2_scale,
+                        l1_normalization_power=config.l1_normalization_power,
+                        l2_normalization_power=config.l2_normalization_power,
                     ),
                     prefix="loss/total",
                 ),
@@ -137,7 +137,7 @@ class LitSparseAutoencoder(LightningModule):
             # loss and l1 metrics). Note the metric that goes first must calculate all the states
             # needed by the rest of the group.
             compute_groups=[
-                ["loss", "l1", "raw_l2", "normalized_l2"],
+                ["loss", "l1", "l2", "normalized_l2"],
                 ["activity"],
                 ["l0"],
             ],
