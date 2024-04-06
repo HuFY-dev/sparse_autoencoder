@@ -20,6 +20,7 @@ import wandb
 
 from sparse_autoencoder.activation_store.tensor_store import TensorActivationStore
 from sparse_autoencoder.autoencoder.lightning import LitSparseAutoencoder
+from sparse_autoencoder.metrics.validate.norm_supression import NormSuppressionMetric
 from sparse_autoencoder.metrics.validate.reconstruction_score import ReconstructionScoreMetric
 from sparse_autoencoder.metrics.wrappers.classwise import ClasswiseWrapperWithMean
 from sparse_autoencoder.source_data.abstract_dataset import SourceDataset, TorchTokenizedPrompts
@@ -135,6 +136,13 @@ class Pipeline:
             prefix="validation/reconstruction_score",
         )
         self.reconstruction_score.to(get_model_device(self.source_model))
+
+        self.norm_suppression_metric = ClasswiseWrapperWithMean(
+            NormSuppressionMetric(len(cache_names), keep_batch_dim=False),
+            component_names=cache_names,
+            prefix="validation/norm_suppression",
+        )
+        self.norm_suppression_metric.to(get_model_device(self.source_model))
 
         # Create a stateful iterator
         source_dataloader = source_dataset.get_dataloader(
@@ -295,6 +303,38 @@ class Pipeline:
                     losses_with_reconstruction[component_idx] += loss_with_reconstruction.sum()
                     losses_with_zero_ablation[component_idx] += loss_with_zero_ablation.sum()
 
+        # Calculate the norm suppression
+        with torch.no_grad():
+            batch = next(self.source_data)
+
+            input_ids: Int[Tensor, Axis.names(Axis.SOURCE_DATA_BATCH, Axis.POSITION)] = batch[
+                "input_ids"
+            ].to(source_model_device)
+
+            _, cache = self.source_model.run_with_cache(
+                input_ids, 
+                return_cache_object=True, 
+                names_filter=self.cache_names,
+            )
+            source_activations: Float[
+                Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL, Axis.INPUT_OUTPUT_FEATURE)
+            ] = torch.cat(
+                [
+                    cache[cache_name].view(-1, 1, cache[cache_name].shape[-1]).clone()
+                    for cache_name in self.cache_names
+                ], 
+                dim=1,
+            )
+            del cache
+            reconstructed_activations: Float[
+                Tensor, Axis.names(Axis.BATCH, Axis.COMPONENT_OPTIONAL, Axis.INPUT_OUTPUT_FEATURE)
+            ] = sae_model.forward(source_activations).decoded_activations
+            
+            self.norm_suppression_metric.update(
+                decoded_activations=reconstructed_activations,
+                source_activations=source_activations,
+            )
+
         # Log
         if wandb.run is not None:
             log = {
@@ -314,6 +354,7 @@ class Pipeline:
                 }
             )
             log.update(self.reconstruction_score.compute())
+            log.update(self.norm_suppression_metric.compute())
             wandb.log(log)
 
     @final
