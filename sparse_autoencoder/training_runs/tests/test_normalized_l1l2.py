@@ -70,7 +70,7 @@ def train_gpt_small_mlp_layers(
                 noise_scale=Parameter(1),
             ),
             pipeline=PipelineHyperparameters(
-                max_activations=Parameter(20_000_000),
+                max_activations=Parameter(100_000_000),
                 checkpoint_frequency=Parameter(100_000_000),
                 validation_frequency=Parameter(5_000_000),
                 max_store_size=Parameter(100_000),
