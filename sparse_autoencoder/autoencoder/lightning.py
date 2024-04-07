@@ -231,7 +231,7 @@ class LitSparseAutoencoder(LightningModule):
         )
 
         if wandb.run is not None:
-            self.log_dict(train_metrics, on_step=True, on_epoch=True)
+            self.log_dict(train_metrics)
 
         # Resample dead neurons
         parameter_updates = self.activation_resampler.forward(
