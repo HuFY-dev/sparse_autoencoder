@@ -99,7 +99,7 @@ class NeuronActivityMetric(Metric):
 
         self.neuron_fired_count += neuron_has_fired.sum(dim=0, dtype=torch.float)
 
-    def compute(self) -> Int64[Tensor, Axis.COMPONENT_OPTIONAL]:
+    def compute(self) -> Float[Tensor, Axis.COMPONENT_OPTIONAL]:
         """Compute the metric.
 
         Note that torchmetrics converts shape `[0]` tensors into scalars (shape `0`).
@@ -109,5 +109,5 @@ class NeuronActivityMetric(Metric):
         )
 
         return torch.sum(
-            self.neuron_fired_count <= threshold_activations, dim=-1, dtype=torch.int64
+            self.neuron_fired_count <= threshold_activations, dim=-1, dtype=torch.float32
         )
