@@ -31,7 +31,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
 def train_gpt_small_mlp_layers(
-    expansion_factor: int = 16,
+    expansion_factor: int = 4,
     n_layers: int = 12,
 ) -> None:
     """Run a new sweep experiment on GPT 2 Small's MLP layers.
@@ -44,8 +44,9 @@ def train_gpt_small_mlp_layers(
     sweep_config = SweepConfig(
         parameters=Hyperparameters(
             loss=LossHyperparameters(
-                l1_coefficient=Parameter(max=1e-3, min=1e-4),
-                l2_normalization_method=Parameter(value="none"),
+                l1_coefficient=Parameter(max=5e-5, min=5e-6),
+                l1_normalization_power=Parameter(2),
+                l2_normalization_power=Parameter(0),
             ),
             optimizer=OptimizerHyperparameters(
                 lr=Parameter(max=0.001, min=0.00001),
@@ -65,17 +66,17 @@ def train_gpt_small_mlp_layers(
             ),
             autoencoder=AutoencoderHyperparameters(
                 expansion_factor=Parameter(value=expansion_factor),
-                sae_type=Parameter("normalized_sae"),
+                sae_type=Parameter("sae"),
                 noise_scale=Parameter(1),
             ),
             pipeline=PipelineHyperparameters(
-                max_activations=Parameter(1_000_000_000),
-                checkpoint_frequency=Parameter(50_000_000),
-                validation_frequency=Parameter(50_000_000),
+                max_activations=Parameter(100_000_000),
+                checkpoint_frequency=Parameter(100_000_000),
+                validation_frequency=Parameter(5_000_000),
                 max_store_size=Parameter(100_000),
                 source_data_batch_size=Parameter(16),
                 train_batch_size=Parameter(4096),
-                log_frequency=Parameter(100),
+                log_frequency=Parameter(24),
             ),
             activation_resampler=ActivationResamplerHyperparameters(
                 resample_interval=Parameter(200_000_000),
@@ -92,4 +93,4 @@ def train_gpt_small_mlp_layers(
 
 
 if __name__ == "__main__":
-    train_gpt_small_mlp_layers()
+    train_gpt_small_mlp_layers(expansion_factor=16)
