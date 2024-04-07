@@ -78,7 +78,7 @@ class SparseAutoencoderConfig(BaseModel):
     l2_normalization_power: float = 0.0
     """The power of ||x||_2 in the L2 normalization step.
 
-    The normalization is done by dividing the MSE by the norm of the input activations raised to
+    The normalization is done by multiplying the MSE by the norm of the input activations raised to
     this power. This is useful when there exist high-norm outliers in the input activations causing
     the model to overfit. For regular L2, this should be 0.
     

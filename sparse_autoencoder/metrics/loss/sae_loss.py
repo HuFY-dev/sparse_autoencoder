@@ -94,7 +94,7 @@ class SparseAutoencoderLoss(Metric):
     def l2_normalization_power(self) -> float:
         """The power of ||x||_2 in the L2 normalization step.
 
-    The normalization is done by dividing the MSE by the norm of the input activations raised to
+    The normalization is done by multiplying the MSE by the norm of the input activations raised to
     this power. This is useful when there exist high-norm outliers in the input activations causing
     the model to overfit. For regular L2, this should be 0.
         """
@@ -166,8 +166,7 @@ class SparseAutoencoderLoss(Metric):
         Returns:
             Normalized absolute sum of the learned activations.
         """
-        layer_norm_mean = source_activations.norm(dim=-1, p=2).mean(dim=0, keepdim=True)
-        return absolute_loss * layer_norm_mean.pow(l1_normalization_power)
+        return absolute_loss * source_activations.norm(dim=-1, p=2).pow(l1_normalization_power)
 
     def update(
         self,

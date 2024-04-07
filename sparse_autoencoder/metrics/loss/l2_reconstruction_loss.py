@@ -96,7 +96,7 @@ class L2ReconstructionLoss(Metric):
     def l2_normalization_power(self) -> float:
         """The power of ||x||_2 in the normalization step.
 
-    The normalization is done by dividing the MSE by the norm of the input activations raised to
+    The normalization is done by multiplying the MSE by the norm of the input activations raised to
     this power. This is useful when there exist high-norm outliers in the input activations causing
     the model to overfit. For regular L2, this should be 0.
         """
@@ -158,12 +158,12 @@ class L2ReconstructionLoss(Metric):
         """Normalize the mse by input norm.
 
         When `l2_normalization_power` is set to 0, this is equivalent to not normalizing the loss.
-        When set to 1, this is equivalent to normalizing the loss by the input norm, making the
-        loss similar to (1 - cosine similarity) * input norm. When set to 2, this is equivalent
+        When set to -1, this is equivalent to normalizing the loss by the input norm, making the
+        loss similar to (1 - cosine similarity) * input norm. When set to -2, this is equivalent
         to normalizing the loss by the input norm squared, making the loss similar to (1 - cosine
         similarity).
         """
-        return mse / source_activations.norm(dim=-1, p=2).pow(l2_normalization_power)
+        return mse * source_activations.norm(dim=-1, p=2).pow(l2_normalization_power)
 
     def update(
         self,
