@@ -1,3 +1,11 @@
+# Modifications
+
+This is a modified version of sparse autoencoder, with additional hyperparameters documented in [`USAGE.md`](https://github.com/HuFY-dev/sparse_autoencoder/blob/dev/docs/content/USAGE.md).
+
+Examples analyzing my trained sparse autoencoder can be found [here](https://github.com/HuFY-dev/sparse_autoencoder/blob/dev/docs/content/NSAE_analysis.ipynb).
+
+I also wrote a more comprehensive analysis on this modification on [LessWrong](https://www.lesswrong.com/editPost?postId=3ZCKSArYwgg9P4hqQ&key=60dc527bcff5e9a1fa0375c8ed4a03).
+
 # Sparse Autoencoder
 
 [![PyPI](https://img.shields.io/pypi/v/sparse_autoencoder?color=blue)](https://pypi.org/project/transformer-lens/)
