@@ -92,12 +92,7 @@ class SparseAutoencoderLoss(Metric):
 
     @property
     def l2_normalization_power(self) -> float:
-        """The power of ||x||_2 in the L2 normalization step.
-
-    The normalization is done by multiplying the MSE by the norm of the input activations raised to
-    this power. This is useful when there exist high-norm outliers in the input activations causing
-    the model to overfit. For regular L2, this should be 0.
-        """
+        """The power of ||x||_2 in the L2 normalization step."""
         return self._l2_normalization_power
 
     @l2_normalization_power.setter

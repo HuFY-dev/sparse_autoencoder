@@ -81,22 +81,6 @@ class SparseAutoencoderConfig(BaseModel):
     The normalization is done by multiplying the MSE by the norm of the input activations raised to
     this power. This is useful when there exist high-norm outliers in the input activations causing
     the model to overfit. For regular L2, this should be 0.
-    
-    NOTE: This will only change the scale of the l2 loss but not the l1, so it's recommended to use
-    different l1 coefficients for different normalization methods.
-
-    Intuitions of different normalization methods:
-    - 0: This is equivalent to not normalizing the loss, so inputs with high norms (>100) will
-    have significantly higher losses than inputs with lower norms (~50). This term can be
-    approximated by 2 * norm(x)^2 * (1 - cosine_similarity(x', x)) which grows quadratically with
-    the norm of the input assuming the cosine similarity is constant.
-    - 1: This divides the loss by the norm of the input vector. This term can be
-    approximated by 2 * norm(x) * (1 - cosine_similarity(x', x)) which grows linearly with the norm
-    assuming the cosine similarity is constant.
-    - 2: This divides the loss by the squared norm of the input vector. This term
-    can be approximated by 2 * (1 - cosine_similarity(x', x)) which is constant with respect to the
-    norm of the input assuming the cosine similarity is constant. This allows the model to better
-    pick up information from low norm inputs.
 
     This can be useful because the input vectors can vary in magnitude and normalizing them can help
     to ensure that the loss is not dominated by activations of high magnitudes (often

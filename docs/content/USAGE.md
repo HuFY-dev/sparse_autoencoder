@@ -23,41 +23,24 @@ This is only applicable for normalized_sae that uses the TanhEncoder.
 ## `LossHyperparameters`
 
 ```python
-l2_normalization_method: Parameter[str] = field(default=Parameter(value="none"))
-"""Normalize by input norm.
+l1_normalization_power: Parameter[float] = field(default=Parameter(0.0))
+"""The power of ||x||_2 in the L1 normalization step.
 
-Choices: ["none", "input_norm", "input_norm_squared"]
+This normalization is used to match the scale of L1 with L2. This is useful when the L1 and L2
+losses are not on the same scale, which can cause one loss to dominate the other.
 
-The normalization method to use for the mse (L2) loss. Default is "none", which returns the raw
-L2 loss. If set to "input_norm", the loss is normalized by the input norm. If set to "input_norm
-squared", the loss is normalized by the input norm squared. 
+NOTE: This will only change the scale of the l1 loss, so it's recommended to use different l1 coefficients for different normalization methods.
+"""
 
-NOTE: This will only change the scale of the l2 loss but not the l1, so it's recommended to use
-different l1 coefficients for different normalization methods.
-Intuitions of different normalization methods:
-- "none": This is equivalent to not normalizing the loss, so inputs with high norms (>100) will
-have significantly higher losses than inputs with lower norms (~50). This term can be
-approximated by 2 * norm(x)^2 * (1 - cosine_similarity(x', x)) which grows quadratically with
-the norm of the input assuming the cosine similarity is constant.
-- "input_norm": This divides the loss by the norm of the input vector. This term can be
-approximated by 2 * norm(x) * (1 - cosine_similarity(x', x)) which grows linearly with the norm
-assuming the cosine similarity is constant.
-- "input_norm_squared": This divides the loss by the squared norm of the input vector. This term
-can be approximated by 2 * (1 - cosine_similarity(x', x)) which is constant with respect to the
-norm of the input assuming the cosine similarity is constant. This allows the model to better
-pick up information from low norm inputs.
+l2_normalization_power: Parameter[float] = field(default=Parameter(0.0))
+"""The power of ||x||_2 in the L2 normalization step.
+
+The normalization is done by multiplying the MSE by the norm of the input activations raised to
+this power. This is useful when there exist high-norm outliers in the input activations causing
+the model to overfit. For regular L2, this should be 0.
+
 This can be useful because the input vectors can vary in magnitude and normalizing them can help
 to ensure that the loss is not dominated by activations of high magnitudes (often
 uninterpretable activations from the <|endoftext|> token).
-"""
-```
-
-```python
-match_l1_l2_scale: Parameter[bool] = field(default=Parameter(value=False))
-"""Whether to match the scale of the L1 and L2 losses.
-
-If True, the L1 loss is normalized by the same power of the input norm as the L2 loss. This can
-make the L1 and L2 loss more balanced across layers and better controlled by the L1 coefficient.
-More detailed analysis can be found in ./docs/content/ANALYSIS.md.
 """
 ```
