@@ -82,7 +82,7 @@ class TiedBias(Module):
         if self._bias_position == TiedBiasPosition.PRE_ENCODER:
             return x - self.bias
 
-        # If it's the post-encoder bias, we add the bias to the input.
+        # If it's the post-decoder bias, we add the bias to the input.
         return x + self.bias
 
     def extra_repr(self) -> str:
