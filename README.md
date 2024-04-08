@@ -4,7 +4,7 @@ This is a modified version of sparse autoencoder, with additional hyperparameter
 
 Examples analyzing my trained sparse autoencoder can be found [here](https://github.com/HuFY-dev/sparse_autoencoder/blob/dev/docs/content/NSAE_analysis.ipynb).
 
-I also wrote a more comprehensive analysis on this modification on [LessWrong](https://www.lesswrong.com/editPost?postId=3ZCKSArYwgg9P4hqQ&key=60dc527bcff5e9a1fa0375c8ed4a03).
+I also wrote a more comprehensive analysis on this modification on [LessWrong](https://www.lesswrong.com/posts/3ZCKSArYwgg9P4hqQ/normalizing-sparse-autoencoders).
 
 # Sparse Autoencoder
 
