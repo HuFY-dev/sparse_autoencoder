@@ -14,6 +14,7 @@ from pydantic import (
     PositiveInt,
     validate_call,
 )
+from safetensors.torch import save_model
 import torch
 from torch import Tensor
 from torch.nn import Module, Parameter
@@ -318,11 +319,10 @@ class SparseAutoencoder(Module):
     
     def save_separate_model_config(self, file_path_root: Path) -> None:
         file_path_root = Path(file_path_root)
-        state_path = file_path_root.joinpath("model.pt")
+        state_path = file_path_root.joinpath("model.safetensors")
         config_path = file_path_root.joinpath("config.json")
-        state = self.state_dict()
         config = self.config.model_dump()
-        torch.save(state, state_path)
+        save_model(self, str(state_path))
         with open(config_path, "w") as f:
             f.write(json.dumps(config))
 
