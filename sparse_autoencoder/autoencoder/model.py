@@ -1,5 +1,6 @@
 """The Sparse Autoencoder Model."""
 
+import json
 from pathlib import Path
 from tempfile import gettempdir
 from typing import NamedTuple
@@ -314,6 +315,16 @@ class SparseAutoencoder(Module):
         file_path.parent.mkdir(parents=True, exist_ok=True)
         state = SparseAutoencoderState(config=self.config, state_dict=self.state_dict())
         torch.save(state, file_path)
+    
+    def save_separate_model_config(self, file_path_root: Path) -> None:
+        file_path_root = Path(file_path_root)
+        state_path = file_path_root.joinpath("model.pt")
+        config_path = file_path_root.joinpath("config.json")
+        state = self.state_dict()
+        config = self.config.model_dump()
+        torch.save(state, state_path)
+        with open(config_path, "w") as f:
+            f.write(json.dumps(config))
 
     @staticmethod
     def load(
